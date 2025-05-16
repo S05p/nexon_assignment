@@ -1,0 +1,51 @@
+# === Build Outputs ===
+**/dist/
+**/build/
+
+# === Node Modules ===
+**/node_modules/
+
+# === Logs ===
+logs
+**/*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# === OS Files ===
+.DS_Store
+
+# === Test Coverage ===
+**/coverage/
+**/.nyc_output/
+
+# === IDEs and Editors ===
+.idea/
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# === VSCode Settings (optional) ===
+.vscode/
+
+# === dotenv environment variable files ===
+**/.env
+**/.env.*.local
+
+# === Temp Directories ===
+.temp/
+.tmp/
+
+# === Runtime Data ===
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# === Diagnostic Reports ===
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
