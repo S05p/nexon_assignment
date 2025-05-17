@@ -1,15 +1,18 @@
 import { ExceptionFilter, Catch, ArgumentsHost, HttpException } from '@nestjs/common';
 import { Response } from 'express';
-import { ApiError, make_api_result } from '../api_result';
+import { ApiError, ApiResult, make_api_result } from '../api_result';
 
-@Catch(Error)
+@Catch()
 export class ApiExceptionFilter implements ExceptionFilter {
-  catch(exception: ApiError, host: ArgumentsHost) {
+  catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     
-    response
-      .status(200)
-      .json(make_api_result(exception));
+    if (exception instanceof ApiError) {
+      response.status(200).json(make_api_result(exception));
+    } else {
+      console.error('Unexpected error:', exception);
+      response.status(500).json(make_api_result(ApiResult.UNKNOWN_ERROR));
+    }
   }
 } 
