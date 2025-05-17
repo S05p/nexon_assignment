@@ -19,4 +19,4 @@ export class ApiExceptionFilter implements ExceptionFilter {
       response.status(500).json(make_api_result(ApiResult.UNKNOWN_ERROR));
     }
   }
-} 
+}
