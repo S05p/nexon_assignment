@@ -4,12 +4,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation';
 import { TransactionModule } from './common/transaction/transaction.module';
-import { _controllers } from './app.controller';
-import { _providers, _exports } from './app.providers_exports';
 import { TraceMiddleware } from './common/middleware/trace.middleware';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
-import { AuthModule } from './auth/auth.module';
+import { AuthModule } from './common/auth/auth.module';
+import { InternalServiceModule } from './common/adapters/internal-service.module';
+import { UserModule } from './user_service/user.module';
+import { EventModule } from './event_service/event.module';
+import { AppService } from './app.service';
+import { AppLogger } from './common/logger/app-logger.service';
 
 @Module({
   imports: [
@@ -26,6 +29,9 @@ import { AuthModule } from './auth/auth.module';
     // Auth 모듈 설정
     AuthModule,
 
+    // Internal Service 모듈 설정
+    InternalServiceModule,
+
     // Mongo 연결
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
@@ -41,13 +47,16 @@ import { AuthModule } from './auth/auth.module';
       },
       inject: [ConfigService],
     }),
+
+    // route, service 모듈 설정
+    UserModule,
+    EventModule,
   ],
-  controllers: _controllers,
-  providers: _providers,
-  exports: _exports,
+  providers: [AppLogger, AppService],
+  exports: [AppLogger],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(TraceMiddleware,RequestLoggerMiddleware).forRoutes('*'); // 모든 요청에 미들웨어 적용
+    consumer.apply(TraceMiddleware, RequestLoggerMiddleware).forRoutes('*');
   }
 }

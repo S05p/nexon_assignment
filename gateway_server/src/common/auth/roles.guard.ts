@@ -4,7 +4,7 @@ import {
     Injectable,
   } from '@nestjs/common';
   import { Reflector } from '@nestjs/core';
-  import { ROLES_KEY } from '../common/common-variables';
+  import { ROLES_KEY } from '../common-variables';
   import { Role } from './auth.dto';
   
   @Injectable()
