@@ -11,10 +11,8 @@ export class ApiExceptionFilter implements ExceptionFilter {
     if (exception instanceof ApiError) {
       response.status(200).json(make_api_result(exception));
     } else if (exception instanceof NotFoundException) {
-      console.error('NotFoundException:', exception.message);
       response.status(404).json(make_api_result(ApiResult.NOT_FOUND));
     } else if (exception instanceof BadRequestException) {
-      console.error('BadRequestException:', exception.message);
       response.status(400).json(make_api_result(ApiResult.BAD_REQUEST));
     } else {
       console.error('Unexpected error:', exception);

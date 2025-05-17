@@ -8,8 +8,8 @@ import { TraceMiddleware } from './common/middleware/trace.middleware';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { AuthModule } from './common/auth/auth.module';
-import { InternalServiceModule } from './common/adapters/internal-service.module';
 import { AppLogger } from './common/logger/app-logger.service';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -26,8 +26,8 @@ import { AppLogger } from './common/logger/app-logger.service';
     // Auth 모듈 설정
     AuthModule,
 
-    // Internal Service 모듈 설정
-    InternalServiceModule,
+    // User 모듈 설정
+    UserModule,
 
     // Mongo 연결
     MongooseModule.forRootAsync({
