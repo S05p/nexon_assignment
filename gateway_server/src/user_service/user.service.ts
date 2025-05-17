@@ -8,10 +8,11 @@ export class UserService {
     }
 
     async getHello(): Promise<string> {
-        const result = await this.authAdapterService.sendRequest({
-            url: '/hello',
-            method: 'GET',
-        });
+        // const result = await this.authAdapterService.sendRequest({
+        //     url: '/hello',
+        //     method: 'GET',
+        // });
+        const result = "hello";
         return result;
     }
 

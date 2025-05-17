@@ -3,7 +3,6 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation';
-import { TransactionModule } from './common/transaction/transaction.module';
 import { TraceMiddleware } from './common/middleware/trace.middleware';
 import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
@@ -22,9 +21,6 @@ import { AppLogger } from './common/logger/app-logger.service';
       load: [configuration],
       validationSchema,
     }),
-
-    // Transaction 모듈 설정
-    TransactionModule,
 
     // Auth 모듈 설정
     AuthModule,

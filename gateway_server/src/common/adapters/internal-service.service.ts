@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
+import { ConfigService } from '@nestjs/config';
 
 export abstract class AdapterService {
   abstract sendRequest(request: AxiosRequestConfig): Promise<any>;
@@ -9,9 +10,9 @@ export abstract class AdapterService {
 export class AuthAdapterService extends AdapterService {
   private readonly baseUrl: string;
 
-  constructor() {
+  constructor(configService: ConfigService) {
     super();
-    this.baseUrl = 'http://user:3001'; 
+    this.baseUrl = `http://user:${configService.get('authServicePort')}`; 
   }
 
   async sendRequest(request: AxiosRequestConfig): Promise<any> {
@@ -28,9 +29,9 @@ export class AuthAdapterService extends AdapterService {
 export class EventAdapterService extends AdapterService {
   private readonly baseUrl: string;
 
-  constructor() {
+  constructor(configService: ConfigService) {
     super();
-    this.baseUrl = 'http://event:3002';
+    this.baseUrl = `http://event:${configService.get('eventServicePort')}`;
   }
 
   async sendRequest(request: AxiosRequestConfig): Promise<any> {

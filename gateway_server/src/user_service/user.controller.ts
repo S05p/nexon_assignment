@@ -6,15 +6,15 @@ import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result } from '../common/api_result';
 import { UserService } from './user.service';
 
-@Controller("/user")
+@Controller('')
 @UseGuards(CustomJwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {
     this.userService = userService;
   }
 
-  @Get()
-  @Roles(Role.USER)
+  @Get('/user')
+  @Roles(Role.USER, Role.ADMIN)
   getHello(): Record<string, any> {
     try {
       const result = this.userService.getHello();

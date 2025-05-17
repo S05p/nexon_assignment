@@ -16,7 +16,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
-    return payload; // 자동으로 req.user에 바인딩됨
+    console.log('JWT Payload:', payload);
+    // payload를 사용자 객체 형태로 변환
+    return {
+      id: payload.id,
+      role: payload.role,
+      iat: payload.iat,
+      exp: payload.exp
+    };
   }
 }
 
