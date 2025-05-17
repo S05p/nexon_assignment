@@ -2,6 +2,8 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiResult } from '../common/api_result';
 
 
 @Injectable()
@@ -15,5 +17,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
 
   async validate(payload: any) {
     return payload; // 자동으로 req.user에 바인딩됨
+  }
+}
+
+@Injectable()
+export class CustomJwtAuthGuard extends AuthGuard('jwt') {
+  handleRequest(err, user, info, context) {
+    if (info?.name === 'TokenExpiredError') {
+      throw ApiResult.SESSION_EXPIRED;
+    }
+    if (err || !user) {
+      throw err || ApiResult.INVALID_SESSION; 
+    }
+    return user;
   }
 }
