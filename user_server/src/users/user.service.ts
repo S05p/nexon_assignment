@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto, RoleChangeDto, InviteFriendDto } from './user.dto';
+import { CreateUserDto, LoginUserDto, RoleChangeDto, UidBody } from './user.dto';
 import * as bcrypt from 'bcrypt';
 import { HASH_ROUND } from "../common/common-variables";
 import { ApiResult, make_api_result } from "../common/api_result";
@@ -95,8 +95,8 @@ export class UserService {
   }
 
 
-  async inviteFriend(inviteFriendDto: InviteFriendDto) {
-    const user = await this.userModel.findOne({ user_id: inviteFriendDto.uid });
+  async inviteFriend(uidBody: UidBody) {
+    const user = await this.userModel.findOne({ user_id: uidBody.uid });
     if (!user) {
       throw ApiResult.USER_NOT_FOUND;
     }
@@ -106,6 +106,34 @@ export class UserService {
       throw ApiResult.UNKNOWN_ERROR;
     }
     user_history.invited_friend_count += 1;
+    await user_history.save();
+  }
+
+  async killMonster(uidBody: UidBody) {
+    const user = await this.userModel.findOne({ user_id: uidBody.uid });
+    if (!user) {
+      throw ApiResult.USER_NOT_FOUND;
+    }
+
+    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    if (!user_history) {
+      throw ApiResult.UNKNOWN_ERROR;
+    }
+    user_history.kill_monster_count += 99999;
+    await user_history.save();
+  }
+
+  async login_count_up(uidBody: UidBody) {
+    const user = await this.userModel.findOne({ user_id: uidBody.uid });
+    if (!user) {
+      throw ApiResult.USER_NOT_FOUND;
+    }
+
+    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    if (!user_history) {
+      throw ApiResult.UNKNOWN_ERROR;
+    }
+    user_history.login_count += 5;
     await user_history.save();
   }
 }

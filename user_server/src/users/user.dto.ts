@@ -18,6 +18,6 @@ export class RoleChangeDto {
   role: Role;
 }
 
-export class InviteFriendDto {
+export class UidBody {
   uid: string;
 }

@@ -52,7 +52,7 @@ export class UserService {
             // JWT 토큰을 쿠키에 설정
             res.cookie('jwt', response_data.jwt_token, {
                 httpOnly: true,
-                secure: false, // 프로덕션 환경에서만 HTTPS 사용
+                secure: false, 
                 sameSite: 'lax',
                 maxAge: 60 * 60, // 1시간
             });
@@ -74,10 +74,61 @@ export class UserService {
     }
 
     async logout(req: Request, res: Response): Promise<void> {
-        const token = req.cookies?.jwt;
+        const token = req.cookies?.jwt || req.headers.authorization?.split(' ')[1]; // postman 에서 테스트 할 때 사용
         if (!token) {
             throw ApiResult.INVALID_SESSION;
         }
-        res.clearCookie('jwt');
+        // 쿠키가 있다면 제거
+        if (req.cookies?.jwt) {
+            res.clearCookie('jwt');
+        }
+    }
+
+    async inviteFriend(user: any): Promise<void> {
+        const uid = user.id;
+
+        const response_data = await this.authAdapterService.sendRequest({
+            url: '/invite_friend',
+            method: 'POST',
+            data: {
+                uid: uid,
+            },
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
+    }
+
+    async killMonster(user: any): Promise<void> {
+        const uid = user.id;
+
+        const response_data = await this.authAdapterService.sendRequest({
+            url: '/kill_monster',
+            method: 'POST',
+            data: {
+                uid: uid,
+            },
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
+    }
+
+    async loginCountUp(user: any): Promise<void> {
+        const uid = user.id;
+
+        const response_data = await this.authAdapterService.sendRequest({
+            url: '/login_count_up',
+            method: 'POST',
+            data: {
+                uid: uid,   
+            },
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
     }
 }

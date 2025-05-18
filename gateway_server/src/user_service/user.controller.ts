@@ -8,6 +8,7 @@ import { UserService } from './user.service';
 import { LoginUserDto, SignupUserDto, RoleChangeDto } from './user.dto';
 import { Response, Request } from 'express';
 import { ApiError } from '../common/api_result';
+import { User as UserDecorator } from '../common/auth/user.decorator';
 
 @Controller('/user')
 export class UserController {
@@ -67,6 +68,54 @@ export class UserController {
         return make_api_result(error);
       }
       console.error('Error in logout:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Post('/invite_friend')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  @Roles(Role.USER)
+  async inviteFriend(@UserDecorator() user: any) {
+    try {
+      await this.userService.inviteFriend(user);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {  
+        return make_api_result(error);
+      }
+      console.error('Error in inviteFriend:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Post('/kill_monster')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  @Roles(Role.USER)
+  async killMonster(@UserDecorator() user: any) {
+    try {
+      await this.userService.killMonster(user);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {  
+        return make_api_result(error);
+      }
+      console.error('Error in killMonster:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+  
+  @Post('/login_count_up')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  @Roles(Role.USER)
+  async loginCountUp(@UserDecorator() user: any) {
+    try {
+      await this.userService.loginCountUp(user);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {    
+        return make_api_result(error);
+      }
+      console.error('Error in loginCountUp:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
   }
