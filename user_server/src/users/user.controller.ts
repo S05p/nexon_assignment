@@ -7,7 +7,7 @@ import { ApiResult, make_api_result, ApiError } from '../common/api_result';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginUserDto, RoleChangeDto } from './user.dto';
 
-@Controller("")
+@Controller("/user")
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
