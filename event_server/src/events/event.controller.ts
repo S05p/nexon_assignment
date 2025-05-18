@@ -4,7 +4,7 @@ import { ApiResult, make_api_result } from '../common/api_result';
 import { ApiError } from '../common/api_result';
 import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto} from './event.dto';
 
-@Controller('/event') // docker로 배포시 삭제
+@Controller('') 
 export class EventController {
     constructor(private readonly eventService: EventService) {}
 
@@ -65,7 +65,7 @@ export class EventController {
     }
 } 
 
-@Controller('/event/admin') // docker로 배포시 삭제
+@Controller('/admin') 
 export class AdminController {
     constructor(private readonly eventService: EventService) {}
 
