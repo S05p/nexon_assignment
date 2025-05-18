@@ -9,6 +9,7 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { AuthModule } from './common/auth/auth.module';
 import { AppLogger } from './common/logger/app-logger.service';
+import { UserModule } from './users/user.module';
 
 @Module({
   imports: [
@@ -25,17 +26,22 @@ import { AppLogger } from './common/logger/app-logger.service';
     // Auth 모듈 설정
     AuthModule,
 
+    // User 모듈 설정
+    UserModule,
+
     // Mongo 연결
     MongooseModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('mongoUri');
+        console.log('uri', uri);
         if (!uri) {
           console.error('❌ MONGO_URI is not set!');
           process.exit(1);
         }
         return {
           uri,
+          dbName: 'nesonAssignment',
         };
       },
       inject: [ConfigService],

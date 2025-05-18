@@ -37,6 +37,11 @@ export class ApiResult{
     // Bad Request
     static BAD_REQUEST = new ApiError("B001", "잘못된 요청입니다.");
     static NOT_FOUND = new ApiError("B002", "요청하신 경로를 찾을 수 없습니다.");
+
+    // User
+    static USER_ALREADY_EXISTS = new ApiError("A001", "해당 아이디는 이미 존재합니다.");
+    static USER_NOT_FOUND = new ApiError("A002", "해당 아이디는 존재하지 않습니다.");
+    static INVALID_PASSWORD = new ApiError("A003", "비밀번호가 일치하지 않습니다.");
 }
 
 export function make_api_result(api_result: ApiSuccess | ApiError, data: Record<string, any> | undefined = {}) {
