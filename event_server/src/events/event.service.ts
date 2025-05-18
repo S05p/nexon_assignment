@@ -9,6 +9,8 @@ import { ConfigService } from '@nestjs/config';
 import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto   } from './event.dto';
 import { ApiResult } from '../common/api_result';
 import { UserInventory, UserInventoryDocument } from '../users/user_inventory.schema';
+import { ConditionType } from './event.dto';
+import { UserHistory, UserHistoryDocument } from '../users/user_history.schema';
 
 @Injectable()
 export class EventService {
@@ -18,6 +20,7 @@ export class EventService {
         @InjectModel(EventForReward.name) private readonly eventForRewardModel: Model<EventForRewardDocument>,
         @InjectModel(EventForUser.name) private readonly eventForUserModel: Model<EventForUserDocument>,
         @InjectModel(UserInventory.name) private readonly userInventoryModel: Model<UserInventoryDocument>,
+        @InjectModel(UserHistory.name) private readonly userHistoryModel: Model<UserHistoryDocument>,
         private readonly configService: ConfigService,  
       ) {}
 
@@ -36,6 +39,8 @@ export class EventService {
             start_date: createEventDto.start_date,
             end_date: createEventDto.end_date,
             created_user_id: createEventDto.created_user_id,
+            condition_type: createEventDto.condition_type,
+            condition_value: createEventDto.condition_value,
         });
 
         for (const reward of rewards){
@@ -118,6 +123,24 @@ export class EventService {
         if (event_for_user) {
             throw ApiResult.EVENT_FOR_USER_ALREADY_EXISTS;
         }
+        const user_history = await this.userHistoryModel.findOne({ uid: uid });
+        if (!user_history) {
+            throw ApiResult.UNKNOWN_ERROR;
+        }
+        if (event.condition_type === ConditionType.LOGIN) {
+            if (user_history.login_count < event.condition_value) {
+                throw ApiResult.EVENT_CONDITION_NOT_MET;
+            }
+        } else if (event.condition_type === ConditionType.INVITE_FRIEND) {
+            if (user_history.invited_friend_count < event.condition_value) {
+                throw ApiResult.EVENT_CONDITION_NOT_MET;
+            }
+        } else if (event.condition_type === ConditionType.KILL_MONSTER) {
+            if (user_history.kill_monster_count < event.condition_value) {
+                throw ApiResult.EVENT_CONDITION_NOT_MET;
+            }
+        } 
+
         const event_for_reward = await this.eventForRewardModel.find({ event_id: event_id });
         const rewards = await this.rewardModel.find({ _id: { $in: event_for_reward.map(reward => reward.reward_id)}});
         for (const reward of rewards) {

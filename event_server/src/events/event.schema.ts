@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
+import { ConditionType } from './event.dto';
 
 export type EventDocument = Event & Document;
 
@@ -33,6 +34,12 @@ export class Event {
 
     @Prop({ required: true, default: Date.now }) 
     updated_at: Date;
+
+    @Prop({ required: true })
+    condition_type: ConditionType;
+
+    @Prop({ required: true})
+    condition_value: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Event);

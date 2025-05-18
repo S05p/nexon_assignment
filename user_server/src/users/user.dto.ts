@@ -17,3 +17,7 @@ export class RoleChangeDto {
   user_id: string;
   role: Role;
 }
+
+export class InviteFriendDto {
+  uid: string;
+}

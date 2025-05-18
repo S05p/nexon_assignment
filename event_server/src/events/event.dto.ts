@@ -1,6 +1,12 @@
 import { IsOptional, IsBoolean, IsDate, IsInt, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export enum ConditionType {
+    LOGIN = 'login',
+    INVITE_FRIEND = 'invite_friend',
+    KILL_MONSTER = 'kill_monster',
+}
+
 
 export class CreateEventDto {
     created_user_id: string;
@@ -9,6 +15,8 @@ export class CreateEventDto {
     start_date: Date;
     end_date: Date;
     reward_array: Array<string>;
+    condition_type: ConditionType;
+    condition_value: number;
 }
 
 export enum RewardType {

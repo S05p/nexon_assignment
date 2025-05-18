@@ -51,6 +51,7 @@ export class ApiResult{
     static EVENT_ALREADY_EXISTS = new ApiError("E001", "해당 이벤트는 이미 존재합니다.");
     static EVENT_NOT_FOUND = new ApiError("E002", "해당 이벤트는 존재하지 않습니다.");
     static EVENT_FOR_USER_ALREADY_EXISTS = new ApiError("E003", "해당 이벤트 보상 받은 기록이 이미 존재합니다.");
+    static EVENT_CONDITION_NOT_MET = new ApiError("E004", "해당 이벤트 조건을 충족하지 않았습니다.");
 }
 
 export function make_api_result(api_result: ApiSuccess | ApiError, data: Record<string, any> | undefined = {}) {

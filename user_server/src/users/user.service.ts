@@ -2,17 +2,19 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto, RoleChangeDto } from './user.dto';
+import { CreateUserDto, LoginUserDto, RoleChangeDto, InviteFriendDto } from './user.dto';
 import * as bcrypt from 'bcrypt';
 import { HASH_ROUND } from "../common/common-variables";
 import { ApiResult, make_api_result } from "../common/api_result";
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
+import { UserHistory, UserHistoryDocument } from './user_history.schema';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    @InjectModel(UserHistory.name) private readonly userHistoryModel: Model<UserHistoryDocument>,
     private readonly configService: ConfigService,
   ) {}
 
@@ -28,6 +30,13 @@ export class UserService {
       email: createUserDto.email,
       role: createUserDto.role,
       password: hashedPassword,
+    });
+
+    await this.userHistoryModel.create({
+      uid: newUser.user_id,
+      login_count: 0,
+      invited_friend_count: 0,
+      kill_monster_count: 0,
     });
     
     const token = jwt.sign(
@@ -83,5 +92,20 @@ export class UserService {
 
     user.role = roleChangeDto.role;
     await user.save();
+  }
+
+
+  async inviteFriend(inviteFriendDto: InviteFriendDto) {
+    const user = await this.userModel.findOne({ user_id: inviteFriendDto.uid });
+    if (!user) {
+      throw ApiResult.USER_NOT_FOUND;
+    }
+
+    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    if (!user_history) {
+      throw ApiResult.UNKNOWN_ERROR;
+    }
+    user_history.invited_friend_count += 1;
+    await user_history.save();
   }
 }
