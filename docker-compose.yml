@@ -10,7 +10,7 @@ services:
       - USER_SERVICE_URL=http://user:3001
       - EVENT_SERVICE_URL=http://event:3002
       - MONGO_URI=mongodb://mongodb:27017/nexon
-      - JWT_SECRET=your-secret-key
+      - JWT_SECRET=nexon-assignment-secret-key-2024
     depends_on:
       - user
       - event
@@ -24,7 +24,7 @@ services:
       - NODE_ENV=production
       - PORT=3001
       - MONGO_URI=mongodb://mongodb:27017/nexon
-      - JWT_SECRET=your-secret-key
+      - JWT_SECRET=nexon-assignment-secret-key-2024
     networks:
       - app-network
 
