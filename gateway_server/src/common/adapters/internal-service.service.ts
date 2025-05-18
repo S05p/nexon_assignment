@@ -12,7 +12,7 @@ export class AuthAdapterService extends AdapterService {
 
   constructor(configService: ConfigService) {
     super();
-    this.baseUrl = `http://user:${configService.get('authServicePort')}`; 
+    this.baseUrl = `http://localhost:${configService.get('userServicePort')}`; 
   }
 
   async sendRequest(request: AxiosRequestConfig): Promise<any> {
