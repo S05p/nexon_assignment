@@ -9,6 +9,7 @@ import { MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { RequestLoggerMiddleware } from './common/middleware/request-logger.middleware';
 import { AuthModule } from './common/auth/auth.module';
 import { AppLogger } from './common/logger/app-logger.service';
+import { EventModule } from './events/event.module';
 
 @Module({
   imports: [
@@ -24,6 +25,9 @@ import { AppLogger } from './common/logger/app-logger.service';
 
     // Auth 모듈 설정
     AuthModule,
+
+    // Event 모듈 설정
+    EventModule,
 
     // Mongo 연결
     MongooseModule.forRootAsync({

@@ -8,12 +8,15 @@ export class EventService {
     }
 
     async getHello(): Promise<string> {
-        const result = await this.eventAdapterService.sendRequest({
-            url: '/hello',
-            method: 'GET',
-        });
-        return result;
+        try {
+            const result = await this.eventAdapterService.sendRequest({
+                url: '/hello',
+                method: 'GET',
+            });
+            return result;
+        } catch (error) {
+            console.error('Error in getHello:', error);
+            throw error;
+        }
     }
-
-
 }

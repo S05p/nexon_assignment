@@ -42,6 +42,15 @@ export class ApiResult{
     static USER_ALREADY_EXISTS = new ApiError("A001", "해당 아이디는 이미 존재합니다.");
     static USER_NOT_FOUND = new ApiError("A002", "해당 아이디는 존재하지 않습니다.");
     static INVALID_PASSWORD = new ApiError("A003", "비밀번호가 일치하지 않습니다.");
+
+    // Reward
+    static REWARD_ALREADY_EXISTS = new ApiError("R001", "해당 리워드는 이미 존재합니다.");
+    static REWARD_NOT_FOUND = new ApiError("R002", "해당 리워드는 존재하지 않습니다.");
+
+    // Event
+    static EVENT_ALREADY_EXISTS = new ApiError("E001", "해당 이벤트는 이미 존재합니다.");
+    static EVENT_NOT_FOUND = new ApiError("E002", "해당 이벤트는 존재하지 않습니다.");
+    static EVENT_FOR_USER_ALREADY_EXISTS = new ApiError("E003", "해당 이벤트 보상 받은 기록이 이미 존재합니다.");
 }
 
 export function make_api_result(api_result: ApiSuccess | ApiError, data: Record<string, any> | undefined = {}) {

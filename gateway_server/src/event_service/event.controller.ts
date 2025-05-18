@@ -15,10 +15,10 @@ export class EventController {
 
   @Get()
   @Roles(Role.USER)
-  getHello(): Record<string, any> {
+  async getHello(): Promise<Record<string, any>> {
     try {
-      const result = this.eventService.getHello();
-      return make_api_result(ApiResult.IS_OK, result);
+      const result = await this.eventService.getHello();
+      return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       console.error('Error in getHello:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
