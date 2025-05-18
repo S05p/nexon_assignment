@@ -34,7 +34,6 @@ import { UserModule } from './users/user.module';
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
         const uri = configService.get<string>('mongoUri');
-        console.log('uri', uri);
         if (!uri) {
           console.error('❌ MONGO_URI is not set!');
           process.exit(1);

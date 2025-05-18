@@ -9,8 +9,6 @@ services:
       - NODE_ENV=production
       - USER_SERVICE_URL=http://user:3001
       - EVENT_SERVICE_URL=http://event:3002
-      - USER_SERVICE_PORT=3001
-      - EVENT_SERVICE_PORT=3002
       - MONGO_URI=mongodb://mongodb:27017/nexon
       - JWT_SECRET=your-secret-key
     depends_on:
