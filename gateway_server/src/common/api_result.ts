@@ -23,8 +23,11 @@ export class ApiSuccess {
     }
 }
 
-
-
+export class MsaFailed extends ApiError {
+    constructor(code: string, message: string) {
+        super(code, message);
+    }
+}
 export class ApiResult{
     static IS_OK = new ApiSuccess();
 
@@ -51,7 +54,7 @@ export class ApiResult{
     
 }
 
-export function make_api_result(api_result: ApiSuccess | ApiError, data: Record<string, any> | undefined = {}) {
+export function make_api_result(api_result: ApiSuccess | ApiError | MsaFailed, data: Record<string, any> | undefined = {}) {
     if (api_result instanceof ApiSuccess) {
         return {
             result: "success",
