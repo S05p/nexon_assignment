@@ -12,3 +12,8 @@ export class LoginUserDto {
   user_id: string;
   password: string;
 }
+
+export class RoleChangeDto {
+  user_id: string;
+  role: Role;
+}

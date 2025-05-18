@@ -1,11 +1,11 @@
-import { Controller, Get, UseGuards, Body, Post } from '@nestjs/common';
+import { Controller, Put, UseGuards, Body, Post } from '@nestjs/common';
 import { Roles } from '../common/auth/roles.decorator';
 import { Role } from '../common/auth/auth.dto';
 import { RolesGuard } from '../common/auth/roles.guard';
 import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result, ApiError } from '../common/api_result';
 import { UserService } from './user.service';
-import { CreateUserDto, LoginUserDto } from './user.dto';
+import { CreateUserDto, LoginUserDto, RoleChangeDto } from './user.dto';
 
 @Controller("")
 export class UserController {
@@ -29,5 +29,28 @@ export class UserController {
   async login(@Body() loginUserDto: LoginUserDto) {
     const result = await this.userService.login(loginUserDto);
     return make_api_result(ApiResult.IS_OK, result);
+  }
+}
+
+@Controller("/role_change")
+@UseGuards(CustomJwtAuthGuard, RolesGuard)
+export class RoleChangeController {
+  constructor(private readonly userService: UserService) {
+    this.userService = userService;
+  }
+
+  @Put('')
+  @Roles(Role.ADMIN)
+  roleChange(@Body() roleChangeDto: RoleChangeDto): Record<string, any> {
+    try {
+      this.userService.roleChange(roleChangeDto);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in roleChange:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
   }
 }

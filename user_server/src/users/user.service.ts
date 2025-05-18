@@ -2,7 +2,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from './user.schema';
 import { Injectable } from '@nestjs/common';
-import { CreateUserDto, LoginUserDto } from './user.dto';
+import { CreateUserDto, LoginUserDto, RoleChangeDto } from './user.dto';
 import * as bcrypt from 'bcrypt';
 import { HASH_ROUND } from "../common/common-variables";
 import { ApiResult, make_api_result } from "../common/api_result";
@@ -75,7 +75,13 @@ export class UserService {
     return returnData;
   }
 
-  async findById(id: string) {
-    return this.userModel.findOne({ id });
+  async roleChange(roleChangeDto: RoleChangeDto) {
+    const user = await this.userModel.findOne({ user_id: roleChangeDto.user_id });
+    if (!user) {
+      throw ApiResult.USER_NOT_FOUND;
+    }
+
+    user.role = roleChangeDto.role;
+    await user.save();
   }
 }
