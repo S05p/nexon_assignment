@@ -36,6 +36,7 @@ export class ApiResult{
     static SESSION_EXPIRED = new ApiError("U002", "세션이 만료되었습니다.");
     static INVALID_SESSION = new ApiError("U003", "유효하지 않은 세션입니다.");
     static INVALID_ROLE = new ApiError("U004", "권한이 없습니다.");
+    static ALREADY_LOGGED_IN = new ApiError("U005", "이미 로그인되어 있습니다.");
 
     // Bad Request
     static BAD_REQUEST = new ApiError("B001", "잘못된 요청입니다.");

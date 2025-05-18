@@ -1,8 +1,4 @@
 import { Controller, Put, UseGuards, Body, Post } from '@nestjs/common';
-import { Roles } from '../common/auth/roles.decorator';
-import { Role } from '../common/auth/auth.dto';
-import { RolesGuard } from '../common/auth/roles.guard';
-import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result, ApiError } from '../common/api_result';
 import { UserService } from './user.service';
 import { CreateUserDto, LoginUserDto, RoleChangeDto } from './user.dto';
@@ -30,17 +26,8 @@ export class UserController {
     const result = await this.userService.login(loginUserDto);
     return make_api_result(ApiResult.IS_OK, result);
   }
-}
 
-@Controller("/role_change")
-@UseGuards(CustomJwtAuthGuard, RolesGuard)
-export class RoleChangeController {
-  constructor(private readonly userService: UserService) {
-    this.userService = userService;
-  }
-
-  @Put('')
-  @Roles(Role.ADMIN)
+  @Put('/role_change')
   roleChange(@Body() roleChangeDto: RoleChangeDto): Record<string, any> {
     try {
       this.userService.roleChange(roleChangeDto);

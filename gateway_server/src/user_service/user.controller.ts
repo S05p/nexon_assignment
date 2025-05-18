@@ -1,22 +1,22 @@
-import { Controller, Get, UseGuards, Body, Post, Res } from '@nestjs/common';
+import { Controller, UseGuards, Body, Post, Res, Put, Req } from '@nestjs/common';
 import { Roles } from '../common/auth/roles.decorator';
 import { Role } from '../common/auth/auth.dto';
 import { RolesGuard } from '../common/auth/roles.guard';
 import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result } from '../common/api_result';
 import { UserService } from './user.service';
-import { LoginUserDto, SignupUserDto } from './user.dto';
-import { Response } from 'express';
+import { LoginUserDto, SignupUserDto, RoleChangeDto } from './user.dto';
+import { Response, Request } from 'express';
 import { ApiError } from '../common/api_result';
 
-@Controller('/user') // docker로 배포시 삭제
+@Controller('/user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/login')
-  async login(@Body() loginUserDto: LoginUserDto, @Res({ passthrough: true }) res: Response) {
+  async login(@Body() loginUserDto: LoginUserDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      await this.userService.login(loginUserDto, res);
+      await this.userService.login(loginUserDto, req,res);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -28,15 +28,45 @@ export class UserController {
   }
 
   @Post('/signup')
-  async signup(@Body() signupUserDto: SignupUserDto, @Res({ passthrough: true }) res: Response) {
+  async signup(@Body() signupUserDto: SignupUserDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      await this.userService.signup(signupUserDto, res);
+      await this.userService.signup(signupUserDto, req, res);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       if (error instanceof ApiError) {
         return make_api_result(error);
       }
       console.error('Error in signup:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Put('/role_change')
+  @Roles(Role.ADMIN)
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  async roleChange(@Body() roleChangeDto: RoleChangeDto): Promise<any> {
+    try {
+      await this.userService.roleChange(roleChangeDto); 
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in roleChange:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Post('/logout')
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    try {
+      await this.userService.logout(req, res);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in logout:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
   }

@@ -11,3 +11,8 @@ export class SignupUserDto {
   email?: string;
   role: Role;
 }
+
+export class RoleChangeDto {
+  user_id: string;
+  role: Role;
+}

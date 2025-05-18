@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { AuthAdapterService } from "../common/adapters/internal-service.service";
-import { LoginUserDto, SignupUserDto } from "./user.dto";
+import { LoginUserDto, SignupUserDto, RoleChangeDto } from "./user.dto";
 import { ApiResult, MsaFailed } from "../common/api_result";
-import { Response } from 'express';
+import { Response, Request } from 'express';
+import { ApiError } from "../common/api_error";
 
 @Injectable()
 export class UserService {
@@ -10,7 +11,12 @@ export class UserService {
         this.authAdapterService = authAdapterService;
     }
 
-    async login(loginUserDto: LoginUserDto, res: Response): Promise<void> {
+    async login(loginUserDto: LoginUserDto, req: Request, res: Response): Promise<void> {
+        const token = req.cookies?.jwt;
+        if (token) {
+            throw ApiResult.ALREADY_LOGGED_IN;
+        }
+
         const response_data = await this.authAdapterService.sendRequest({
             url: '/login',
             method: 'POST',
@@ -30,16 +36,19 @@ export class UserService {
         }
     }   
 
-    async signup(signupUserDto: SignupUserDto, res: Response): Promise<any> {
+    async signup(signupUserDto: SignupUserDto, req: Request, res: Response): Promise<void> {
+        const token = req.cookies?.jwt;
+        if (token) {
+            throw ApiResult.ALREADY_LOGGED_IN;
+        }
+
         const response_data = await this.authAdapterService.sendRequest({
-            url: '/user/signup',
+            url: '/signup',
             method: 'POST',
             data: signupUserDto,
         });
 
-        console.log(response_data);
-
-        if (response_data.result === ApiResult.IS_OK) {
+        if (response_data.result === ApiResult.IS_OK.result) {
             // JWT 토큰을 쿠키에 설정
             res.cookie('jwt', response_data.jwt_token, {
                 httpOnly: true,
@@ -50,5 +59,25 @@ export class UserService {
         } else {
             throw new MsaFailed(response_data.code, response_data.message);
         }
+    }
+
+    async roleChange(roleChangeDto: RoleChangeDto): Promise<void> {
+        const response_data = await this.authAdapterService.sendRequest({
+            url: '/role_change',
+            method: 'PUT',
+            data: roleChangeDto,
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
+    }
+
+    async logout(req: Request, res: Response): Promise<void> {
+        const token = req.cookies?.jwt;
+        if (!token) {
+            throw ApiResult.INVALID_SESSION;
+        }
+        res.clearCookie('jwt');
     }
 }
