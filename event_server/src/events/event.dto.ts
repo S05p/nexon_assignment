@@ -116,18 +116,17 @@ export class GetRewardListQueryDto {
 }
 
 export class GetHistoryListQueryDto {
-    @IsString()
-    uid: string;
-
     @Type(() => Date)
     @IsDate()
     start_date: Date = new Date();
 }
 
-export class GetAdminHistoryListQueryDto {
+export class GetHistoryListBodyDto {
     @IsString()
-    event_id: string;
+    uid: string;
+}
 
+export class GetAdminHistoryListQueryDto {
     @IsOptional()
     @IsString()
     uid?: string;
@@ -150,4 +149,9 @@ export class GetAdminHistoryListQueryDto {
     @Min(1)
     @Max(100)
     limit: number = 10;
+}
+
+export class GetAdminHistoryListPathDto {
+    @IsString()
+    event_id: string;
 }

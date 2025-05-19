@@ -6,10 +6,10 @@ import { Reward, RewardDocument } from './schemas/reward.schema';
 import { EventForReward, EventForRewardDocument } from './schemas/event_for_reward.schema';
 import { EventForUser, EventForUserDocument } from './schemas/event_for_user.schema';
 import { ConfigService } from '@nestjs/config';
-import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto   } from './event.dto';
+import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto, GetAdminHistoryListPathDto } from './event.dto';
 import { ApiResult } from '../common/api_result';
 import { UserInventory, UserInventoryDocument } from '../users/user_inventory.schema';
-import { ConditionType } from './event.dto';
+import { ConditionType, GetHistoryListBodyDto } from './event.dto';
 import { UserHistory, UserHistoryDocument } from '../users/user_history.schema';
 
 @Injectable()
@@ -137,10 +137,12 @@ export class EventService {
         if (event_for_user) {
             throw ApiResult.EVENT_FOR_USER_ALREADY_EXISTS;
         }
+        console.log("여기서 발생 11");
         const user_history = await this.userHistoryModel.findOne({ uid: uid });
         if (!user_history) {
             throw ApiResult.UNKNOWN_ERROR;
         }
+        console.log("여기서 발생 22");
         if (event.condition_type === ConditionType.LOGIN) {
             if (user_history.login_count < event.condition_value) {
                 throw ApiResult.EVENT_CONDITION_NOT_MET;
@@ -153,13 +155,14 @@ export class EventService {
             if (user_history.kill_monster_count < event.condition_value) {
                 throw ApiResult.EVENT_CONDITION_NOT_MET;
             }
-        } 
-
+        }
+        console.log("여기서 발생 33");
         const event_for_reward = await this.eventForRewardModel.find({ event_id: event_id });
         const rewards = await this.rewardModel.find({ _id: { $in: event_for_reward.map(reward => reward.reward_id)}});
         for (const reward of rewards) {
             await this.userInventoryModel.create({ uid: uid, reward_id: reward._id, amount: reward.amount });
         }
+        console.log("여기서 발생 66");
     }
 
     async getRewardList(getRewardListQueryDto: GetRewardListQueryDto) {
@@ -176,8 +179,9 @@ export class EventService {
         };
     }
 
-    async getHistoryList(getHistoryListQueryDto: GetHistoryListQueryDto) {
-        const { uid, start_date } = getHistoryListQueryDto;
+    async getHistoryList(getHistoryListBodyDto: GetHistoryListBodyDto, getHistoryListQueryDto: GetHistoryListQueryDto) {
+        const { uid } = getHistoryListBodyDto;
+        const { start_date } = getHistoryListQueryDto;
         
         // 현재 진행 중인 이벤트 목록 조회
         // 일반 유저도 참가한 이벤트는 삭제, 비활성화되었어도 조회가능
@@ -209,8 +213,9 @@ export class EventService {
         };
     }
 
-    async getAdminHistoryList(getAdminHistoryListQueryDto: GetAdminHistoryListQueryDto) {
-        const { event_id, uid, page, limit } = getAdminHistoryListQueryDto;
+    async getAdminHistoryList(getAdminHistoryListPathDto: GetAdminHistoryListPathDto, getAdminHistoryListQueryDto: GetAdminHistoryListQueryDto) {
+        const { event_id } = getAdminHistoryListPathDto;
+        const { uid, page, limit } = getAdminHistoryListQueryDto;
         const query: any = {};
 
         const event = await this.eventModel.findById(event_id);

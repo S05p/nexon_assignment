@@ -42,11 +42,11 @@ export class AdminController {
     }
   }
 
-  @Get('/history')
+  @Get('/history/:event_id')
   @Roles(Role.ADMIN)
-  async getAdminHistoryList(@Query() query: any) {
+  async getAdminHistoryList(@Param('event_id') eventId: string, @Query() query: any) {
     try {
-      const result = await this.eventService.getAdminHistoryList(query);
+      const result = await this.eventService.getAdminHistoryList(eventId, query);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) { 
       if (error instanceof ApiError) {

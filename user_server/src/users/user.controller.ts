@@ -23,8 +23,16 @@ export class UserController {
 
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto) {
-    const result = await this.userService.login(loginUserDto);
-    return make_api_result(ApiResult.IS_OK, result);
+    try {
+      const result = await this.userService.login(loginUserDto);
+      return make_api_result(ApiResult.IS_OK, result);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in login:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
   }
 
   @Put('/role-change')

@@ -2,7 +2,7 @@ import { Controller, Get, Body, Post, Query, Param } from '@nestjs/common';
 import { EventService } from './event.service';
 import { ApiResult, make_api_result } from '../common/api_result';
 import { ApiError } from '../common/api_result';
-import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto} from './event.dto';
+import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListPathDto, GetAdminHistoryListQueryDto, GetHistoryListBodyDto } from './event.dto';
 
 @Controller('/events')
 export class EventController {
@@ -37,9 +37,9 @@ export class EventController {
     }
 
     @Get('/history')
-    async getHistoryList(@Query() getHistoryListQueryDto: GetHistoryListQueryDto) {
+    async getHistoryList(@Body() getHistoryListBodyDto: GetHistoryListBodyDto, @Query() getHistoryListQueryDto: GetHistoryListQueryDto) {
         try {
-            const result = await this.eventService.getHistoryList(getHistoryListQueryDto)
+            const result = await this.eventService.getHistoryList(getHistoryListBodyDto, getHistoryListQueryDto)
             return make_api_result(ApiResult.IS_OK, result);
         } catch (error) {
             if (error instanceof ApiError) {
@@ -97,10 +97,10 @@ export class EventAdminController {
         }
     }
 
-    @Get('/history')
-    async getAdminHistoryList(@Query() getAdminHistoryListQueryDto: GetAdminHistoryListQueryDto) {
+    @Get('/history/:event_id')
+    async getAdminHistoryList(@Param() getAdminHistoryListPathDto: GetAdminHistoryListPathDto, @Query() getAdminHistoryListQueryDto: GetAdminHistoryListQueryDto) {
         try {
-            const result = await this.eventService.getAdminHistoryList(getAdminHistoryListQueryDto)
+            const result = await this.eventService.getAdminHistoryList(getAdminHistoryListPathDto, getAdminHistoryListQueryDto)
             return make_api_result(ApiResult.IS_OK, result);
         } catch (error) {
             if (error instanceof ApiError) {

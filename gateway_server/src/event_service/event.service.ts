@@ -107,11 +107,14 @@ export class EventService {
         return response_data;
     }
 
-    async getHistoryList(query: any) {
+    async getHistoryList(user: any, query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
             url: '/events/history',
             method: 'GET',
             params: query,
+            data: {
+                uid: user.id,
+            },
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
@@ -120,9 +123,9 @@ export class EventService {
         return response_data;
     }
 
-    async getAdminHistoryList(query: any) {
+    async getAdminHistoryList(eventId: string, query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events-admin/history',
+            url: `/events-admin/history/${eventId}`,
             method: 'GET',
             params: query,
         });
@@ -136,7 +139,7 @@ export class EventService {
     async createRewardReceipt(user: any, data: Record<string, any>) {
         const data_to_send = {
             ...data,
-            uid: user.uid,
+            uid: user.id,
         };
         const response_data = await this.eventAdapterService.sendRequest({
             url: '/events/reward-receive',

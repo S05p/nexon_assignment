@@ -43,9 +43,9 @@ export class EventController {
 
   @Get('/history')
   @Roles(Role.USER)
-  async getHistoryList(@Query() query: any) {
+  async getHistoryList(@UserDecorator() user: any, @Query() query: any) {
     try {
-      const result = await this.eventService.getHistoryList(query);
+      const result = await this.eventService.getHistoryList(user, query);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
       if (error instanceof ApiError) {

@@ -139,7 +139,7 @@ export class UserService {
       throw ApiResult.USER_NOT_FOUND;
     }
 
-    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    const user_history = await this.userHistoryModel.findOne({ uid: user.id });
     if (!user_history) {
       throw ApiResult.UNKNOWN_ERROR;
     }
@@ -153,7 +153,7 @@ export class UserService {
       throw ApiResult.USER_NOT_FOUND;
     }
 
-    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    const user_history = await this.userHistoryModel.findOne({ uid: user.id });
     if (!user_history) {
       throw ApiResult.UNKNOWN_ERROR;
     }
