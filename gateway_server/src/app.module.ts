@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { MongooseModule } from '@nestjs/mongoose';
+import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { validationSchema } from './config/validation';
 import { TraceMiddleware } from './common/middleware/trace.middleware';
@@ -27,22 +26,6 @@ import { AppLogger } from './common/logger/app-logger.service';
 
     // Internal Service 모듈 설정
     InternalServiceModule,
-
-    // Mongo 연결
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => {
-        const uri = configService.get<string>('mongoUri');
-        if (!uri) {
-          console.error('❌ MONGO_URI is not set!');
-          process.exit(1);
-        }
-        return {
-          uri,
-        };
-      },
-      inject: [ConfigService],
-    }),
 
     // route, service 모듈 설정
     UserModule,
