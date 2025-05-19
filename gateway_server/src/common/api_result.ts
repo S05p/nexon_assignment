@@ -67,7 +67,7 @@ export function make_api_result(api_result: ApiSuccess | ApiError | MsaFailed, d
     }
     else {
         return {
-            result: "failed",
+            result: api_result.result,
             code: api_result.code,
             message: api_result.message,
             data: data
