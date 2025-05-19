@@ -26,6 +26,7 @@ export class ApiSuccess {
 export class MsaFailed extends ApiError {
     constructor(code: string, message: string) {
         super(code, message);
+        this.result = "msa_failed";
     }
 }
 export class ApiResult{
