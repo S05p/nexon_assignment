@@ -35,6 +35,22 @@ Gateway: http://localhost:3000
 * 회원가입, 로그인시 response로 `jwt_token` 값을 전달합니다.\
   해당 값을 Authorization의 `Bearer Token`에 넣어 Auth을 인증합니다.
 
+### ⚠️ 매우 중요
+* 테스트 진행 순서를 다음과 같이 진행 부탁드립니다.
+
+* Admin으로 진행해야하는 작업
+1. [POST] /signin role:admin 으로 회원가입 >> response로 온 jwt_token을 Authorization Bearer token에 입력 **(메모장에 따로 저장)**
+2. [POST] /rewards-admin type:(item,coin,etc)로 리워드 생성
+3. [GET] /rewards-admin, response로 온 reward의 id 값 저장
+4. [POST] /events-admin condition_type:kill_monster 으로 생성 rewards id에 3번에서 가져온 reward id값을 입력
+5. [GET] /events/detail/{event_id} 에서 저장한 event 정보 확인 가능
+6. [GET] /events 에서 event list 확인 가능
+
+# User로 진행해야하는 작업
+1. [POST] /signin role:user 으로 회원가입 >> response로 온 jwt_token을 Authorization Bearer token에 입력 **(메모장에 따로 저장)**
+2. [POST] /users/kill-monster 로 더미 이벤트 수행 요청
+3. 
+
 ### 🧾 API 명세서
 ***
 
