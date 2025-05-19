@@ -22,6 +22,9 @@
 git clone https://github.com/S05p/nexon_assignment.git
 cd nexon_assignment
 
+주의사항: Docker에 이미 27017 Port로 mongoDB가 실행중이면 정상동작하지 않을 수 있습니다.
+docker-compose.yml에서 46번째 줄을 {사용하지 않는 포트}:27017로 변경, event & user서버의 mongodb:{사용하지 않는 포트} 로 변경 후 시작해주세요.
+
 # docker 이미지 빌드 및 실행
 docker compose up --build (최초 실행시 2~3분 소요)
 
@@ -121,7 +124,7 @@ Gateway: http://localhost:3000
     - `A002`: "해당 아이디는 존재하지 않습니다."
     - `A003`: "비밀번호가 일치하지 않습니다."
 
-3. 사용자 정보 조회 [User]
+3. 사용자 정보 조회 [User 권한]
     ```
     [GET] /user-info
     ```
@@ -156,7 +159,7 @@ Gateway: http://localhost:3000
   - **에러 코드**:
     - `A002`: "해당 아이디는 존재하지 않습니다."
 
-4. 역할 변경 [ADMIN]
+4. 역할 변경 [ADMIN 권한]
     ```
     [PUT] /role-change
     ```
@@ -179,7 +182,7 @@ Gateway: http://localhost:3000
   - **에러 코드**:
     - `A002`: "해당 아이디는 존재하지 않습니다."
 
-5. Event 수행 (3개) [USER]
+5. Event 수행 (3개) [USER 권한]
     ```
     [POST] /invite-friend
     [POST] /kill-monster
@@ -191,9 +194,11 @@ Gateway: http://localhost:3000
   - **에러 코드**:
     - `A002`: "해당 아이디는 존재하지 않습니다."
 
+***
+
 #### Event
 
-1. 이벤트 목록 조회
+1. 이벤트 목록 조회 [USER, OPERATOR, AUDITOR, ADMIN 권한]
     ```
     [GET] /events 
     ```
@@ -225,7 +230,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-2. 이벤트 상세 조회
+2. 이벤트 상세 조회 [USER, OPERATOR, AUDITOR, ADMIN 권한]
     ```
     GET /events/detail/:event_id
     ```
@@ -255,7 +260,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-3. 이벤트 히스토리 조회
+3. 이벤트 히스토리 조회 [USER 권한]
     ```
     GET /events/history
     ```
@@ -282,7 +287,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-4. 보상 수령
+4. 보상 수령 [USER 권한]
     ```
     [POST] /events/reward-receive
     ```
@@ -309,9 +314,11 @@ Gateway: http://localhost:3000
     }
     ```
 
+***
+
 ##### 관리자 API
 
-1. 이벤트 목록 조회 (관리자)
+1. 이벤트 목록 조회 [ADMIN 권한]
     ```
     [GET] /events-admin
     ```
@@ -345,11 +352,11 @@ Gateway: http://localhost:3000
 }
 ```
 
-2. 이벤트 상세 조회 (관리자)
+2. 이벤트 상세 조회 [ADMIN 권한]
     ```
     [GET] /events-admin/detail/:event_id
     ```
-    - **설명**: 관리자용 이벤트 상세 정보를 조회합니다.
+    - **설명**: 관리자용 이벤트 상세 정보를 조회합니다. (삭제 및 deactivate 이벤트 확인)
     - **응답**:
     ```json
     {
@@ -377,7 +384,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-3. 이벤트 히스토리 조회 (관리자)
+3. 이벤트 히스토리 조회 [ADMIN 권한]
     ```
     GET /events-admin/history/:event_id
     ```
@@ -404,7 +411,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-4. 이벤트 생성 (관리자)
+4. 이벤트 생성 [ADMIN 권한]
     ```
     [POST] /events-admin
     ```
@@ -453,7 +460,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-5. 보상 생성 (관리자)
+5. 보상 생성 [ADMIN 권한]
     ```
     [POST] /rewards-admin
     ```
@@ -484,7 +491,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-6. 보상 목록 조회 (관리자)
+6. 보상 목록 조회 [ADMIN 권한]
     ```
     [GET] /rewards-admin
     ```
@@ -511,7 +518,7 @@ Gateway: http://localhost:3000
 ##### 공통 응답 형식
 
 1. 성공 응답
-```json
+```typescript
 {
   "status": number,
   "message": "string",
@@ -520,7 +527,7 @@ Gateway: http://localhost:3000
 ```
 
 2. 에러 응답
-```json
+```typescript
 {
   "status": number,
   "message": "string",
