@@ -17,7 +17,7 @@ export class ValidationExceptionFilter implements ExceptionFilter {
         };
 
         response
-            .status(400)
+            .status(200)
             .json(errorResponse);
     }
 } 

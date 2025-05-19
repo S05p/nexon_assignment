@@ -10,25 +10,25 @@ export class EventService {
 
     async getAdminEventList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events/admin',
+            url: '/events-admin',
             method: 'GET',
             params: query,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
     async getAdminEventDetail(eventId: string) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: `/events/admin/${eventId}`,
+            url: `/events-admin/detail/${eventId}`,
             method: 'GET',
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
@@ -42,7 +42,7 @@ export class EventService {
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
@@ -54,46 +54,55 @@ export class EventService {
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
-    async createEvent(data: any) {
+    async createEvent(user: any, data: any) {
+
+        
+
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events/admin',
+            url: '/events-admin',
             method: 'POST',
-            data: data,
+            data: {
+                ...data,
+                created_user_id: user.id,
+            },
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
-    async createReward(data: any) {
+    async createReward(user: any, data: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events/admin/reward',
+            url: '/rewards-admin',
             method: 'POST',
-            data: data,
+            data: {
+                ...data,
+                created_user_id: user.id,
+            },
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
     async getRewardList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events/admin/reward',
+            url: '/rewards-admin',
             method: 'GET',
             params: query,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
@@ -106,33 +115,37 @@ export class EventService {
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
     async getAdminHistoryList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/events/admin/history',
+            url: '/events-admin/history',
             method: 'GET',
             params: query,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }
 
-    async createRewardReceipt(data: any) {
+    async createRewardReceipt(user: any, data: Record<string, any>) {
+        const data_to_send = {
+            ...data,
+            uid: user.uid,
+        };
         const response_data = await this.eventAdapterService.sendRequest({
             url: '/events/reward-receive',
             method: 'POST',
-            data: data,
+            data: data_to_send,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
         return response_data;
     }

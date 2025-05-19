@@ -29,7 +29,7 @@ export class UserService {
                 maxAge: 60 * 60,
             });
         } else {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
 
         return {
@@ -58,7 +58,7 @@ export class UserService {
                 maxAge: 60 * 60,
             });
         } else {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
 
         return {
@@ -79,21 +79,39 @@ export class UserService {
 
     async roleChange(data: any): Promise<void> {
         const response_data = await this.authAdapterService.sendRequest({
-            url: '/role_change',
+            url: '/role-change',
             method: 'PUT',
             data: data,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
-            throw new MsaFailed(response_data.code, response_data.message);
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
     }
+
+    async userInfo(user: any): Promise<Record<string, any>> {
+        const uid = user.id;
+        
+        const response_data = await this.authAdapterService.sendRequest({
+            url: '/user-info',
+            method: 'GET',
+            data: {
+                uid: uid,
+            },
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message, response_data.data);
+        }
+
+        return response_data.data;
+    }   
 
     async inviteFriend(user: any): Promise<void> {
         const uid = user.id;
 
         const response_data = await this.authAdapterService.sendRequest({
-            url: '/invite_friend',
+            url: '/invite-friend',
             method: 'POST',
             data: {
                 uid: uid,
@@ -109,7 +127,7 @@ export class UserService {
         const uid = user.id;
 
         const response_data = await this.authAdapterService.sendRequest({
-            url: '/kill_monster',
+            url: '/kill-monster',
             method: 'POST',
             data: {
                 uid: uid,
@@ -125,7 +143,7 @@ export class UserService {
         const uid = user.id;
 
         const response_data = await this.authAdapterService.sendRequest({
-            url: '/login_count_up',
+            url: '/login-count-up',
             method: 'POST',
             data: {
                 uid: uid,   

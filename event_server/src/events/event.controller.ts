@@ -65,8 +65,8 @@ export class EventController {
     }
 } 
 
-@Controller('/events/admin') 
-export class AdminController {
+@Controller('/events-admin') 
+export class EventAdminController {
     constructor(private readonly eventService: EventService) {}
 
     @Get('')
@@ -83,7 +83,7 @@ export class AdminController {
         }
     }
 
-    @Get('/:event_id')
+    @Get('/detail/:event_id')
     async getEventDetail(@Param() getEventDetailPathDto: GetEventDetailPathDto) {
         try {
             const result = await this.eventService.getEventDetail(getEventDetailPathDto.event_id, true)
@@ -124,8 +124,13 @@ export class AdminController {
             return make_api_result(ApiResult.UNKNOWN_ERROR);
         }
     }
+}
 
-    @Post('/reward')
+@Controller('/rewards-admin') 
+export class RewardAdminController {
+    constructor(private readonly eventService: EventService) {}
+
+    @Post('')
     async createReward(@Body() createRewardDto: CreateRewardDto) {
         try {
             await this.eventService.createReward(createRewardDto)
@@ -139,7 +144,7 @@ export class AdminController {
         }
     }
 
-    @Get('/reward')
+    @Get('')
     async getRewardList(@Query() getRewardListQueryDto: GetRewardListQueryDto) {
         try {
             const result = await this.eventService.getRewardList(getRewardListQueryDto)
@@ -152,4 +157,4 @@ export class AdminController {
             return make_api_result(ApiResult.UNKNOWN_ERROR);
         }
     }
-}
+}   

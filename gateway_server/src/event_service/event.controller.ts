@@ -5,6 +5,7 @@ import { EventService } from './event.service';
 import { Roles } from '../common/auth/roles.decorator';
 import { Role } from '../common/auth/auth.dto';
 import { RolesGuard } from '../common/auth/roles.guard';
+import { User as UserDecorator } from '../common/auth/user.decorator';
 @Controller('/events')
 @UseGuards(CustomJwtAuthGuard, RolesGuard)
 export class EventController {
@@ -57,10 +58,10 @@ export class EventController {
 
   @Post('/reward-receive')
   @Roles(Role.USER)
-  async createRewardReceipt(@Body() data: any) {
+  async createRewardReceipt(@UserDecorator() user: any, @Body() data: any) {
     try {
-      const result = await this.eventService.createRewardReceipt(data);
-      return make_api_result(ApiResult.IS_OK, result);
+      const result = await this.eventService.createRewardReceipt(user, data);
+      return make_api_result(ApiResult.IS_OK, result);  
     } catch (error) {
       if (error instanceof ApiError) {
         return make_api_result(error);

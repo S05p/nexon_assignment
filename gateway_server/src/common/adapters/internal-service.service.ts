@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import axios, { AxiosRequestConfig } from 'axios';
 import { ConfigService } from '@nestjs/config';
-
+import { MsaFailed, ApiResult } from '../api_result';
 export abstract class AdapterService {
   abstract sendRequest(request: AxiosRequestConfig): Promise<any>;
 }
@@ -21,6 +21,11 @@ export class AuthAdapterService extends AdapterService {
       url: this.baseUrl + request.url,
     };
     const response = await axios.request(config);
+
+    if (response.status >= 400) {
+      throw new MsaFailed(ApiResult.UNKNOWN_ERROR.code, ApiResult.UNKNOWN_ERROR.message, response.data);
+    }
+
     return response.data;
   }
 }
@@ -40,6 +45,11 @@ export class EventAdapterService extends AdapterService {
       url: this.baseUrl + request.url,
     };
     const response = await axios.request(config);
+
+    if (response.status >= 400) {
+      throw new MsaFailed(ApiResult.UNKNOWN_ERROR.code, ApiResult.UNKNOWN_ERROR.message, response.data);
+    }
+
     return response.data;
   }
 }

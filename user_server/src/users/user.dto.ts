@@ -1,5 +1,5 @@
 import { Role } from "../common/auth/auth.dto";
-import { IsString, IsOptional, IsEnum, MinLength, MaxLength, IsEmail } from 'class-validator';
+import { IsString, IsOptional, IsEnum, IsEmail } from 'class-validator';
 
 export class CreateUserDto {
     @IsString()
@@ -26,7 +26,7 @@ export class LoginUserDto {
 
 export class RoleChangeDto {
     @IsString()
-    user_id: string;
+    uid: string;
 
     @IsEnum(Role)
     role: Role;

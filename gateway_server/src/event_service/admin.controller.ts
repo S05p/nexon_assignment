@@ -4,9 +4,10 @@ import { Role } from '../common/auth/auth.dto';
 import { RolesGuard } from '../common/auth/roles.guard';
 import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result, ApiError } from '../common/api_result';
-import { EventService } from './event.service';
+import { EventService } from './event.service'; 
+import { User as UserDecorator } from '../common/auth/user.decorator';
 
-@Controller('/events/admin')
+@Controller('/events-admin')
 @UseGuards(CustomJwtAuthGuard, RolesGuard)
 export class AdminController {
   constructor(private readonly eventService: EventService) {}
@@ -26,7 +27,7 @@ export class AdminController {
     }
   }
 
-  @Get('/:event_id')
+  @Get('/detail/:event_id')
   @Roles(Role.ADMIN)
   async getEventDetail(@Param('event_id') eventId: string) {
     try {
@@ -58,9 +59,9 @@ export class AdminController {
 
   @Post('')
   @Roles(Role.ADMIN)
-  async createEvent(@Body() data: any) {
+  async createEvent(@UserDecorator() user: any, @Body() data: any) {
     try {
-      const result = await this.eventService.createEvent(data);
+      const result = await this.eventService.createEvent(user, data);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -70,12 +71,18 @@ export class AdminController {
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
   }
+} 
 
-  @Post('/reward')
+@Controller('/rewards-admin')
+@UseGuards(CustomJwtAuthGuard, RolesGuard)
+export class RewardAdminController {
+  constructor(private readonly eventService: EventService) {}
+
+  @Post('')
   @Roles(Role.ADMIN)
-  async createReward(@Body() data: any) {
+  async createReward(@UserDecorator() user: any, @Body() data: any) {
     try {
-      const result = await this.eventService.createReward(data);
+      const result = await this.eventService.createReward(user, data);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -86,7 +93,7 @@ export class AdminController {
     }
   }
 
-  @Get('/reward')
+  @Get('')
   @Roles(Role.ADMIN)
   async getRewardList(@Query() query: any) {
     try {
@@ -100,4 +107,5 @@ export class AdminController {
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
   }
-} 
+}
+

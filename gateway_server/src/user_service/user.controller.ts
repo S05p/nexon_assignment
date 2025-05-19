@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, Req, Res } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, Req, Res, Get, Put } from '@nestjs/common';
 import { ApiResult, make_api_result } from '../common/api_result';
 import { UserService } from './user.service';
 import { Response, Request } from 'express';
@@ -10,7 +10,6 @@ import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { User as UserDecorator } from '../common/auth/user.decorator';
 
 @Controller('/users')
-@UseGuards(CustomJwtAuthGuard, RolesGuard)
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -43,6 +42,7 @@ export class UserController {
   }
 
   @Post('/logout')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
   async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
       await this.userService.logout(req, res);
@@ -56,7 +56,40 @@ export class UserController {
     }
   }
 
-  @Post('/invite_friend')
+  @Put('/role-change')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  @Roles(Role.ADMIN)
+  async roleChange(@Body() data: any) {
+    try {
+      await this.userService.roleChange(data);
+      return make_api_result(ApiResult.IS_OK);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in roleChange:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  } 
+
+  @Get('/user-info')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
+  @Roles(Role.USER)
+  async userInfo(@UserDecorator() user: any) {    
+    try {
+      const result = await this.userService.userInfo(user);
+      return make_api_result(ApiResult.IS_OK, result);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
+      console.error('Error in userInfo:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Post('/invite-friend')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
   @Roles(Role.USER)
   async inviteFriend(@UserDecorator() user: any) {
     try {
@@ -71,7 +104,8 @@ export class UserController {
     }
   }
 
-  @Post('/kill_monster')
+  @Post('/kill-monster')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
   @Roles(Role.USER)
   async killMonster(@UserDecorator() user: any) {
     try {
@@ -86,7 +120,8 @@ export class UserController {
     }
   }
 
-  @Post('/login_count_up')
+  @Post('/login-count-up')
+  @UseGuards(CustomJwtAuthGuard, RolesGuard)
   @Roles(Role.USER)
   async loginCountUp(@UserDecorator() user: any) {
     try {

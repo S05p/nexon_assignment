@@ -9,12 +9,13 @@ import { ApiResult, make_api_result } from "../common/api_result";
 import * as jwt from 'jsonwebtoken';
 import { ConfigService } from '@nestjs/config';
 import { UserHistory, UserHistoryDocument } from './user_history.schema';
-
+import { UserInventory, UserInventoryDocument } from './user_inventory.schema';
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
     @InjectModel(UserHistory.name) private readonly userHistoryModel: Model<UserHistoryDocument>,
+    @InjectModel(UserInventory.name) private readonly userInventoryModel: Model<UserInventoryDocument>,
     private readonly configService: ConfigService,
   ) {}
 
@@ -41,7 +42,8 @@ export class UserService {
     
     const token = jwt.sign(
       { 
-        id: newUser.user_id,
+        id: newUser.id,
+        uid: newUser.user_id,
         role: newUser.role 
       }, 
       this.configService.get<string>('jwtSecret')!, 
@@ -69,7 +71,8 @@ export class UserService {
 
     const token = jwt.sign(
       { 
-        id: user.user_id,
+        id: user.id,
+        uid: user.user_id,
         role: user.role
       }, 
       this.configService.get<string>('jwtSecret')!, 
@@ -86,7 +89,7 @@ export class UserService {
   }
 
   async roleChange(roleChangeDto: RoleChangeDto) {
-    const user = await this.userModel.findOne({ user_id: roleChangeDto.user_id });
+    const user = await this.userModel.findById(roleChangeDto.uid);
     if (!user) {
       throw ApiResult.USER_NOT_FOUND;
     }
@@ -95,9 +98,29 @@ export class UserService {
     await user.save();
   }
 
+  async userInfo(uidBody: UidBody) {
+    const user = await this.userModel.findById(uidBody.uid);
+    if (!user) {
+      throw ApiResult.USER_NOT_FOUND;
+    }
+
+    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
+    if (!user_history) {
+      throw ApiResult.UNKNOWN_ERROR;
+    }
+
+    const user_invite_history = await this.userInventoryModel.find({ uid: user.user_id });
+
+    return {
+      user: user,
+      user_history: user_history,
+      user_invite_history: user_invite_history,
+    }
+  }
+
 
   async inviteFriend(uidBody: UidBody) {
-    const user = await this.userModel.findOne({ user_id: uidBody.uid });
+    const user = await this.userModel.findById(uidBody.uid);
     if (!user) {
       throw ApiResult.USER_NOT_FOUND;
     }
@@ -111,7 +134,7 @@ export class UserService {
   }
 
   async killMonster(uidBody: UidBody) {
-    const user = await this.userModel.findOne({ user_id: uidBody.uid });
+    const user = await this.userModel.findById(uidBody.uid);
     if (!user) {
       throw ApiResult.USER_NOT_FOUND;
     }
@@ -125,7 +148,7 @@ export class UserService {
   }
 
   async login_count_up(uidBody: UidBody) {
-    const user = await this.userModel.findOne({ user_id: uidBody.uid });
+    const user = await this.userModel.findById(uidBody.uid);
     if (!user) {
       throw ApiResult.USER_NOT_FOUND;
     }

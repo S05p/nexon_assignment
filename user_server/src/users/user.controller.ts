@@ -27,7 +27,7 @@ export class UserController {
     return make_api_result(ApiResult.IS_OK, result);
   }
 
-  @Put('/role_change')
+  @Put('/role-change')
   roleChange(@Body() roleChangeDto: RoleChangeDto): Record<string, any> {
     try {
       this.userService.roleChange(roleChangeDto);
@@ -41,7 +41,21 @@ export class UserController {
     }
   }
 
-  @Post('/invite_friend')
+  @Get('/user-info')
+  async userInfo(@Body() uidBody: UidBody) {
+    try {
+      const result = await this.userService.userInfo(uidBody);
+      return make_api_result(ApiResult.IS_OK, result);
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);  
+      }
+      console.error('Error in userInfo:', error);
+      return make_api_result(ApiResult.UNKNOWN_ERROR);
+    }
+  }
+
+  @Post('/invite-friend')
   async inviteFriend(@Body() uidBody: UidBody) {
     try {
       this.userService.inviteFriend(uidBody);
@@ -55,7 +69,7 @@ export class UserController {
     }
   }
 
-  @Post('/kill_monster')
+  @Post('/kill-monster')
   async killMonster(@Body() uidBody: UidBody) {
     try {
       this.userService.killMonster(uidBody);
@@ -69,8 +83,8 @@ export class UserController {
     }
   }
   
-  @Post('/login_count_up')
-  async login_count_up(@Body() uidBody: UidBody) {
+  @Post('/login-count-up')  
+  async loginCountUp(@Body() uidBody: UidBody) {
     try {
       this.userService.login_count_up(uidBody);
       return make_api_result(ApiResult.IS_OK);
@@ -78,7 +92,7 @@ export class UserController {
       if (error instanceof ApiError) {
         return make_api_result(error);
       }
-      console.error('Error in login_count_up:', error);
+      console.error('Error in loginCountUp:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
   }

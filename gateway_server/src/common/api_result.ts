@@ -24,9 +24,12 @@ export class ApiSuccess {
 }
 
 export class MsaFailed extends ApiError {
-    constructor(code: string, message: string) {
+    data: any | undefined;
+
+    constructor(code: string, message: string, data: any | undefined = {}) {
         super(code, message);
         this.result = "msa_failed";
+        this.data = data;
     }
 }
 export class ApiResult{
@@ -65,12 +68,19 @@ export function make_api_result(api_result: ApiSuccess | ApiError | MsaFailed, d
             data: data
         }
     }
+    else if (api_result instanceof MsaFailed) {
+        return {
+            result: api_result.result,
+            code: api_result.code,
+            message: api_result.message,
+            data: api_result.data
+        }
+    }
     else {
         return {
             result: api_result.result,
             code: api_result.code,
             message: api_result.message,
-            data: data
         }
     }
 }

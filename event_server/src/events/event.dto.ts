@@ -1,5 +1,6 @@
 import { IsOptional, IsBoolean, IsDate, IsInt, IsString, IsArray, IsEnum, Min, Max, ArrayMinSize } from 'class-validator';
 import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 export enum ConditionType {
     LOGIN = 'login',
@@ -78,12 +79,12 @@ export class GetEventListQueryDto {
 
     @IsInt()
     @Min(1)
-    page: number;
+    page: number = 1;
 
     @IsInt()
     @Min(1)
     @Max(100)
-    limit: number;
+    limit: number = 10;
 }
 
 export class GetEventDetailPathDto {
@@ -106,12 +107,12 @@ export class GetRewardListQueryDto {
 
     @IsInt()
     @Min(1)
-    page: number;
+    page: number = 1;
 
     @IsInt()
     @Min(1)
     @Max(100)
-    limit: number;
+    limit: number = 10;
 }
 
 export class GetHistoryListQueryDto {
@@ -143,10 +144,10 @@ export class GetAdminHistoryListQueryDto {
 
     @IsInt()
     @Min(1)
-    page: number;
+    page: number = 1;
 
     @IsInt()
     @Min(1)
     @Max(100)
-    limit: number;
+    limit: number = 10;
 }
