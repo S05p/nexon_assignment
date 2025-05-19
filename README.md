@@ -157,6 +157,349 @@ Gateway: http://localhost:3000
 - **에러 코드**:
   - `A002`: "해당 아이디는 존재하지 않습니다."
 
+
+#### Event
+
+##### 1. 이벤트 관련 API
+
+* 1.1 이벤트 목록 조회
+```
+GET /events
+```
+- **설명**: 현재 진행 중인 이벤트 목록을 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 목록 조회 성공",
+  "data": [
+    {
+      "event_id": "string",
+      "title": "string",
+      "description": "string",
+      "start_date": "string (ISO date)",
+      "end_date": "string (ISO date)",
+      "status": "string (ACTIVE/INACTIVE)",
+      "rewards": [
+        {
+          "reward_id": "string",
+          "name": "string",
+          "description": "string",
+          "type": "string (ITEM/COIN/ETC)",
+          "amount": "number"
+        }
+      ]
+    }
+  ]
+}
+```
+
+* 1.2 이벤트 상세 조회
+```
+GET /events/detail/:event_id
+```
+- **설명**: 특정 이벤트의 상세 정보를 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 상세 조회 성공",
+  "data": {
+    "event_id": "string",
+    "title": "string",
+    "description": "string",
+    "start_date": "string (ISO date)",
+    "end_date": "string (ISO date)",
+    "status": "string (ACTIVE/INACTIVE)",
+    "rewards": [
+      {
+        "reward_id": "string",
+        "name": "string",
+        "description": "string",
+        "type": "string (ITEM/COIN/ETC)",
+        "amount": "number"
+      }
+    ]
+  }
+}
+```
+
+* 1.3 이벤트 히스토리 조회
+```
+GET /events/history
+```
+- **설명**: 사용자의 이벤트 참여 히스토리를 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 히스토리 조회 성공",
+  "data": [
+    {
+      "event_id": "string",
+      "title": "string",
+      "participated_at": "string (ISO date)",
+      "rewards_received": [
+        {
+          "reward_id": "string",
+          "name": "string",
+          "received_at": "string (ISO date)"
+        }
+      ]
+    }
+  ]
+}
+```
+
+* 1.4 보상 수령
+```
+POST /events/reward-receive
+```
+- **설명**: 이벤트 보상을 수령합니다.
+- **요청**:
+```json
+{
+  "event_id": "string",
+  "reward_id": "string"
+}
+```
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "보상 수령 성공",
+  "data": {
+    "reward_id": "string",
+    "name": "string",
+    "type": "string (ITEM/COIN/ETC)",
+    "amount": "number",
+    "received_at": "string (ISO date)"
+  }
+}
+```
+
+##### 2. 관리자 API
+
+* 2.1 이벤트 목록 조회 (관리자)
+```
+GET /events-admin
+```
+- **설명**: 관리자용 이벤트 목록을 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 목록 조회 성공",
+  "data": [
+    {
+      "event_id": "string",
+      "title": "string",
+      "description": "string",
+      "start_date": "string (ISO date)",
+      "end_date": "string (ISO date)",
+      "status": "string (ACTIVE/INACTIVE)",
+      "created_at": "string (ISO date)",
+      "updated_at": "string (ISO date)",
+      "rewards": [
+        {
+          "reward_id": "string",
+          "name": "string",
+          "description": "string",
+          "type": "string (ITEM/COIN/ETC)",
+          "amount": "number"
+        }
+      ]
+    }
+  ]
+}
+```
+
+* 2.2 이벤트 상세 조회 (관리자)
+```
+GET /events-admin/detail/:event_id
+```
+- **설명**: 관리자용 이벤트 상세 정보를 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 상세 조회 성공",
+  "data": {
+    "event_id": "string",
+    "title": "string",
+    "description": "string",
+    "start_date": "string (ISO date)",
+    "end_date": "string (ISO date)",
+    "status": "string (ACTIVE/INACTIVE)",
+    "created_at": "string (ISO date)",
+    "updated_at": "string (ISO date)",
+    "rewards": [
+      {
+        "reward_id": "string",
+        "name": "string",
+        "description": "string",
+        "type": "string (ITEM/COIN/ETC)",
+        "amount": "number"
+      }
+    ]
+  }
+}
+```
+
+* 2.3 이벤트 히스토리 조회 (관리자)
+```
+GET /events-admin/history/:event_id
+```
+- **설명**: 특정 이벤트의 참여자 히스토리를 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "이벤트 히스토리 조회 성공",
+  "data": [
+    {
+      "user_id": "string",
+      "username": "string",
+      "participated_at": "string (ISO date)",
+      "rewards_received": [
+        {
+          "reward_id": "string",
+          "name": "string",
+          "received_at": "string (ISO date)"
+        }
+      ]
+    }
+  ]
+}
+```
+
+* 2.4 이벤트 생성 (관리자)
+```
+POST /events-admin
+```
+- **설명**: 새로운 이벤트를 생성합니다.
+- **요청**:
+```json
+{
+  "title": "string",
+  "description": "string",
+  "start_date": "string (ISO date)",
+  "end_date": "string (ISO date)",
+  "rewards": [
+    {
+      "name": "string",
+      "description": "string",
+      "type": "string (ITEM/COIN/ETC)",
+      "amount": "number"
+    }
+  ]
+}
+```
+- **응답**:
+```json
+{
+  "status": 201,
+  "message": "이벤트 생성 성공",
+  "data": {
+    "event_id": "string",
+    "title": "string",
+    "description": "string",
+    "start_date": "string (ISO date)",
+    "end_date": "string (ISO date)",
+    "status": "ACTIVE",
+    "created_at": "string (ISO date)",
+    "updated_at": "string (ISO date)",
+    "rewards": [
+      {
+        "reward_id": "string",
+        "name": "string",
+        "description": "string",
+        "type": "string (ITEM/COIN/ETC)",
+        "amount": "number"
+      }
+    ]
+  }
+}
+```
+
+### 2.5 보상 생성 (관리자)
+```
+POST /rewards-admin
+```
+- **설명**: 새로운 보상을 생성합니다.
+- **요청**:
+```json
+{
+  "name": "string",
+  "description": "string",
+  "type": "string (ITEM/COIN/ETC)",
+  "amount": "number"
+}
+```
+- **응답**:
+```json
+{
+  "status": 201,
+  "message": "보상 생성 성공",
+  "data": {
+    "reward_id": "string",
+    "name": "string",
+    "description": "string",
+    "type": "string (ITEM/COIN/ETC)",
+    "amount": "number",
+    "created_at": "string (ISO date)",
+    "updated_at": "string (ISO date)"
+  }
+}
+```
+
+* 2.6 보상 목록 조회 (관리자)
+```
+GET /rewards-admin
+```
+- **설명**: 생성된 보상 목록을 조회합니다.
+- **응답**:
+```json
+{
+  "status": 200,
+  "message": "보상 목록 조회 성공",
+  "data": [
+    {
+      "reward_id": "string",
+      "name": "string",
+      "description": "string",
+      "type": "string (ITEM/COIN/ETC)",
+      "amount": "number",
+      "created_at": "string (ISO date)",
+      "updated_at": "string (ISO date)"
+    }
+  ]
+}
+```
+
+##### 3. 공통 응답 형식
+
+* 3.1 성공 응답
+```json
+{
+  "status": number,
+  "message": "string",
+  "data": object | array
+}
+```
+
+* 3.2 에러 응답
+```json
+{
+  "status": number,
+  "message": "string",
+  "error": {
+    "code": "string",
+    "details": "string"
+  }
+}
+```
+
 ##### 공통 에러 코드
 - `U001`: "알 수 없는 오류가 발생했습니다."
 - `U002`: "세션이 만료되었습니다."
