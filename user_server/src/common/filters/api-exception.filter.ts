@@ -1,4 +1,4 @@
-import { ExceptionFilter, Catch, ArgumentsHost, HttpException, NotFoundException, BadRequestException } from '@nestjs/common';
+import { ExceptionFilter, Catch, ArgumentsHost, NotFoundException, BadRequestException } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiError, ApiResult, make_api_result } from '../api_result';
 
