@@ -44,12 +44,18 @@ Gateway: http://localhost:3000
 3. [GET] /rewards-admin, response로 온 reward의 id 값 저장
 4. [POST] /events-admin condition_type:kill_monster 으로 생성 rewards id에 3번에서 가져온 reward id값을 입력
 5. [GET] /events/detail/{event_id} 에서 저장한 event 정보 확인 가능
-6. [GET] /events 에서 event list 확인 가능
+6. [GET] /events 에서 event list 확인 가능 (단, admin은 삭제 및 deactivate된 이벤트도 확인 가능)
 
 # User로 진행해야하는 작업
 1. [POST] /signin role:user 으로 회원가입 >> response로 온 jwt_token을 Authorization Bearer token에 입력 **(메모장에 따로 저장)**
-2. [POST] /users/kill-monster 로 더미 이벤트 수행 요청
-3. 
+2. [POST] /users/kill-monster 로 더미 이벤트 수행 요청 (99999마리 몬스터 잡음)
+3. [GET] /events 에서 event list 확인 가능  (여기서 확인한 event_id값 저장)
+4. [POST] /events/reward-receive 로 event_id:{event_id}로 요청. 조건 충족시 아이템 지급
+5. [GET] /events/history 에서 본인이 수령한 아이템 목록확인
+6. [GET] /users/user-info 에서 본인의 정보 전부 확인 가능 (수령한 아이템 id도 확인 가능)
+
+# Admin으로 재로그인
+1. [GET] /events-admin/history/{event_id} 로 요청시 모든 유저의 아이템 수령 기록 확인 가능
 
 ### 🧾 API 명세서
 ***
