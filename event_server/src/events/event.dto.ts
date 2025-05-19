@@ -36,6 +36,9 @@ export class CreateEventDto {
     @IsInt()
     @Min(1)
     condition_value: number;
+
+    @IsBoolean()
+    is_active: boolean = true;
 }
 
 export enum RewardType {

@@ -1,558 +1,323 @@
-### 📖 목차
+## 📖 목차
 
 1. [🔍 서버 Flow](#-서버-flow)
 2. [✅ 준비 사항](#-준비-사항)
-3. [🧾 API 명세서](#-api-명세서)
-    * [User](#User)
-    * [Event](#event)
+3. [🧪 테스트 순서](#-테스트-순서)
+4. [🧾 API 명세서](#-api-명세서)
+5. [⚙️ 공통 정보](#-공통-정보)
 
-### 🔍 서버 Flow
-***
+---
+
+## 🔍 서버 Flow
+
 ![Image](https://github.com/user-attachments/assets/b981bcae-183f-4764-aef7-5fb76ed0bee5)
 
-### ✅ 준비 사항
-***
+---
 
-#### 🛠️ 소프트웨어
-* 환경에 맞는 Docker 설치 [링크](https://www.docker.com)
+## ✅ 준비 사항
 
-#### 🚀 프로젝트 클론 및 동작 확인
-```
+### 🛠️ 소프트웨어
+
+* Docker 설치: [https://www.docker.com](https://www.docker.com)
+
+### 🚀 실행 절차
+
+```bash
 # 프로젝트 클론
 git clone https://github.com/S05p/nexon_assignment.git
 cd nexon_assignment
 
-주의사항: Docker에 이미 27017 Port로 mongoDB가 실행중이면 정상동작하지 않을 수 있습니다.
-docker-compose.yml에서 46번째 줄을 {사용하지 않는 포트}:27017로 변경, event & user서버의 mongodb:{사용하지 않는 포트} 로 변경 후 시작해주세요.
+# ⚠️ 포트 충돌 주의
+# 27017 포트로 이미 MongoDB가 실행 중이면 `docker-compose.yml`의 46번째 줄 포트 변경 필요
 
-# docker 이미지 빌드 및 실행
-docker compose up --build (최초 실행시 2~3분 소요)
-
-# 서비스 확인
-Gateway: http://localhost:3000
-혹은 docker desktop 어플에서 로그를 확인
+# 도커 실행
+docker compose up --build
 ```
 
-#### 🧪 테스트 방법
-* Curl 혹은 Postman(권장)
-* 회원가입, 로그인시 response로 `jwt_token` 값을 전달합니다.\
-  해당 값을 Authorization의 `Bearer Token`에 넣어 Auth을 인증합니다.
+### 🔍 서비스 주소
 
-### ⚠️ 매우 중요
-* 테스트 진행 순서를 다음과 같이 진행 부탁드립니다.
+* Gateway: [http://localhost:3000](http://localhost:3000)
+* 또는 Docker Desktop 앱에서 컨테이너 로그 확인
 
-#### Admin으로 진행해야하는 작업
-1. [POST] /signin role:admin 으로 회원가입
-    * response로 온 jwt_token을 Authorization Bearer token에 입력 **(메모장에 따로 저장)**
-2. [POST] /rewards-admin type:(item,coin,etc)로 리워드 생성
-3. [GET] /rewards-admin, response로 온 reward의 id 값 저장
-4. [POST] /events-admin condition_type:kill_monster 으로 생성,
-    * rewards id에 3번에서 가져온 reward id값을 입력
-5. [GET] /events/detail/{event_id} 에서 저장한 event 정보 확인 가능
-6. [GET] /events 에서 event list 확인 가능 (단, admin은 삭제 및 deactivate된 이벤트도 확인 가능)
+---
 
-#### User로 진행해야하는 작업
-1. [POST] /signin role:user 으로 회원가입 
-    * response로 온 jwt_token을 Authorization Bearer token에 입력 **(메모장에 따로 저장)**
-2. [POST] /users/kill-monster 로 더미 이벤트 수행 요청 (99999마리 몬스터 잡음)
-3. [GET] /events 에서 event list 확인 가능  (여기서 확인한 event_id값 저장)
-4. [POST] /events/reward-receive 로 event_id:{event_id}로 요청. 조건 충족시 아이템 지급
-5. [GET] /events/history 에서 본인이 수령한 아이템 목록확인
-6. [GET] /users/user-info 에서 본인의 정보 전부 확인 가능 (수령한 아이템 id도 확인 가능)
+## 🧪 테스트 순서
 
-#### Admin으로 재로그인
-1. [GET] /events-admin/history/{event_id} 로 요청시 모든 유저의 아이템 수령 기록 확인 가능
+> **⚠️ 테스트는 아래 순서대로 진행 바랍니다.**
 
-### 🧾 API 명세서
-***
+### 👑 Admin 테스트
 
-#### User
+1. `/signin` (role: admin) → jwt\_token authorization Bearer token에 입력
+2. `/rewards-admin` → 보상 생성
+3. `/rewards-admin` → 생성된 reward\_id 저장
+4. `/events-admin` → reward\_id 포함 이벤트 생성
+5. `/events/detail/{event_id}` → 이벤트 상세 확인
+6. `/events` → 전체 이벤트 목록 확인
 
-1. 회원가입
-    ```
-    [POST] /signup
-    ```
-  - **설명**: 새로운 사용자 등록
-  - **Request Body**:
-    ```typescript
-    {
-      user_id: string;      // 필수
-      password: string;     // 필수
-      email?: string;       // 선택 (이메일 형식)
-      role: Role;           // 필수 (USER, OPERATOR, AUDITOR, ADMIN 중 하나)
-    }
-    ```
-  - **Response**:
-    ```typescript
-    {
-      result: "success" | "failed",
-      code?: string,       // 실패 시 에러 코드
-      message?: string,    // 실패 시 에러 메시지
-      data?: any           // 성공 시 반환 데이터
-    }
-    ```
-  - **에러 코드**:
-    - `A001`: "해당 아이디는 이미 존재합니다."
-    - `B001`: "잘못된 요청입니다."
+### 🙋‍♂️ User 테스트
 
-2. 로그인
-    ```
-    [POST] /login
-    ```
-  - **설명**: 사용자 로그인
-  - **Request Body**:
-    ```typescript
-    {
-      user_id: string;    // 필수
-      password: string;   // 필수
-    }
-    ```
-  - **Response**:
-    ```typescript
-    {
-      result: "success" | "failed",
-      code?: string,
-      message?: string,
-      data?: {
-        jwt_token: string;
-        user_id: string;
-        role: Role;
-      }
-    }
-    ```
-  - **에러 코드**:
-    - `A002`: "해당 아이디는 존재하지 않습니다."
-    - `A003`: "비밀번호가 일치하지 않습니다."
+1. `/signin` (role: user) → jwt\_token authorization Bearer token에 입력
+2. `/users/kill-monster` → 더미 이벤트 수행
+3. `/events` → 참여 가능한 이벤트 확인 (event\_id 저장)
+4. `/events/reward-receive` → 보상 수령
+5. `/events/history` → 수령한 아이템 목록 확인
+6. `/users/user-info` → 사용자 전체 정보 확인
 
-3. 사용자 정보 조회 [User 권한]
-    ```
-    [GET] /user-info
-    ```
-  - **설명**: 사용자 정보 조회
-  - **Request Body**:
-    - 없음
-  - **Response**:
-    ```typescript
-    {
-      result: "success" | "failed",
-      code?: string,
-      message?: string,
-      data?: {
-        user: {
-          user_id: string;
-          email?: string;
-          role: Role;
-          created_at: Date;
-          updated_at: Date;
-          is_deleted: boolean;
-          is_active: boolean;
-        };
-        user_history: {
-          // 사용자 히스토리 정보
-        };
-        user_inventory_history: Array<{
-          // 사용자 인벤토리 정보
-        }>;
-      }
-    }
-    ```
-  - **에러 코드**:
-    - `A002`: "해당 아이디는 존재하지 않습니다."
+### 🔁 Admin 재로그인
 
-4. 역할 변경 [ADMIN 권한]
-    ```
-    [PUT] /role-change
-    ```
-  - **설명**: 사용자 역할 변경
-  - **Request Body**:
-    ```typescript
-    {
-      uid: string;    // 필수
-      role: Role;     // 필수 (USER, OPERATOR, AUDITOR, ADMIN 중 하나)
-    }
-    ```
-  - **Response**:
-    ```typescript
-    {
-      result: "success" | "failed",
-      code?: string,
-      message?: string
-    }
-    ```
-  - **에러 코드**:
-    - `A002`: "해당 아이디는 존재하지 않습니다."
+* `/events-admin/history/{event_id}` → 전체 사용자 히스토리 확인
 
-5. Event 수행 (3개) [USER 권한]
-    ```
-    [POST] /invite-friend
-    [POST] /kill-monster
-    [POST] /login-count-up
-    ```
-  - **설명**: 사용자 이벤트 수행
-  - **Request Body**:
-    전달 X
-  - **에러 코드**:
-    - `A002`: "해당 아이디는 존재하지 않습니다."
+---
 
-***
+## 🧾 API 명세서
 
-#### Event
+### 👤 User API
 
-1. 이벤트 목록 조회 [USER, OPERATOR, AUDITOR, ADMIN 권한]
-    ```
-    [GET] /events 
-    ```
-  - **설명**: 현재 진행 중인 이벤트 목록을 조회합니다.
-  - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "이벤트 목록 조회 성공",
-      "data": [
-        {
-          "event_id": "string",
-          "title": "string",
-          "description": "string",
-          "start_date": "string (ISO date)",
-          "end_date": "string (ISO date)",
-          "status": "string (ACTIVE/INACTIVE)",
-          "rewards": [
-            {
-              "reward_id": "string",
-              "name": "string",
-              "description": "string",
-              "type": "string (ITEM/COIN/ETC)",
-              "amount": "number"
-            }
-          ]
-        }
-      ]
-    }
-    ```
+#### 1. 회원가입
 
-2. 이벤트 상세 조회 [USER, OPERATOR, AUDITOR, ADMIN 권한]
-    ```
-    GET /events/detail/:event_id
-    ```
-    - **설명**: 특정 이벤트의 상세 정보를 조회합니다.
-    - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "이벤트 상세 조회 성공",
-      "data": {
-        "event_id": "string",
-        "title": "string",
-        "description": "string",
-        "start_date": "string (ISO date)",
-        "end_date": "string (ISO date)",
-        "status": "string (ACTIVE/INACTIVE)",
-        "rewards": [
-          {
-            "reward_id": "string",
-            "name": "string",
-            "description": "string",
-            "type": "string (ITEM/COIN/ETC)",
-            "amount": "number"
-          }
-        ]
-      }
-    }
-    ```
+```http
+POST /signup
+```
 
-3. 이벤트 히스토리 조회 [USER 권한]
-    ```
-    GET /events/history
-    ```
-    - **설명**: 사용자의 이벤트 참여 히스토리를 조회합니다.
-    - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "이벤트 히스토리 조회 성공",
-      "data": [
-        {
-          "event_id": "string",
-          "title": "string",
-          "participated_at": "string (ISO date)",
-          "rewards_received": [
-            {
-              "reward_id": "string",
-              "name": "string",
-              "received_at": "string (ISO date)"
-            }
-          ]
-        }
-      ]
-    }
-    ```
+**Body**:
 
-4. 보상 수령 [USER 권한]
-    ```
-    [POST] /events/reward-receive
-    ```
-    - **설명**: 이벤트 보상을 수령합니다.
-    - **요청**:
-    ```json
-    {
-      "event_id": "string",
-      "reward_id": "string"
-    }
-    ```
-    - **응답**:
-    ```typescript
-    {
-      "status": 200,
-      "message": "보상 수령 성공",
-      "data": {
-        "reward_id": "string",
-        "name": "string",
-        "type": "string (ITEM/COIN/ETC)",
-        "amount": "number",
-        "received_at": "string (ISO date)"
-      }
-    }
-    ```
-
-***
-
-##### 관리자 API
-
-1. 이벤트 목록 조회 [ADMIN 권한]
-    ```
-    [GET] /events-admin
-    ```
-- **설명**: 관리자용 이벤트 목록을 조회합니다.
-- **응답**:
 ```json
 {
-  "status": 200,
-  "message": "이벤트 목록 조회 성공",
-  "data": [
-    {
-      "event_id": "string",
-      "title": "string",
-      "description": "string",
-      "start_date": "string (ISO date)",
-      "end_date": "string (ISO date)",
-      "status": "string (ACTIVE/INACTIVE)",
-      "created_at": "string (ISO date)",
-      "updated_at": "string (ISO date)",
-      "rewards": [
-        {
-          "reward_id": "string",
-          "name": "string",
-          "description": "string",
-          "type": "string (ITEM/COIN/ETC)",
-          "amount": "number"
-        }
-      ]
-    }
-  ]
+  "user_id": "string",
+  "password": "string",
+  "email": "string (optional)",
+  "role": "user | operator | auditor | admin"
 }
 ```
 
-2. 이벤트 상세 조회 [ADMIN 권한]
-    ```
-    [GET] /events-admin/detail/:event_id
-    ```
-    - **설명**: 관리자용 이벤트 상세 정보를 조회합니다. (삭제 및 deactivate 이벤트 확인)
-    - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "이벤트 상세 조회 성공",
-      "data": {
-        "event_id": "string",
-        "title": "string",
-        "description": "string",
-        "start_date": "string (ISO date)",
-        "end_date": "string (ISO date)",
-        "status": "string (ACTIVE/INACTIVE)",
-        "created_at": "string (ISO date)",
-        "updated_at": "string (ISO date)",
-        "rewards": [
-          {
-            "reward_id": "string",
-            "name": "string",
-            "description": "string",
-            "type": "string (ITEM/COIN/ETC)",
-            "amount": "number"
-          }
-        ]
-      }
-    }
-    ```
+#### 2. 로그인
 
-3. 이벤트 히스토리 조회 [ADMIN 권한]
-    ```
-    GET /events-admin/history/:event_id
-    ```
-    - **설명**: 특정 이벤트의 참여자 히스토리를 조회합니다.
-    - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "이벤트 히스토리 조회 성공",
-      "data": [
-        {
-          "user_id": "string",
-          "username": "string",
-          "participated_at": "string (ISO date)",
-          "rewards_received": [
-            {
-              "reward_id": "string",
-              "name": "string",
-              "received_at": "string (ISO date)"
-            }
-          ]
-        }
-      ]
-    }
-    ```
+```http
+POST /login
+```
 
-4. 이벤트 생성 [ADMIN 권한]
-    ```
-    [POST] /events-admin
-    ```
-    - **설명**: 새로운 이벤트를 생성합니다.
-    - **요청**:
-    ```json
-    {
-      "title": "string",
-      "description": "string",
-      "start_date": "string (ISO date)",
-      "end_date": "string (ISO date)",
-      "rewards": [
-        {
-          "name": "string",
-          "description": "string",
-          "type": "string (ITEM/COIN/ETC)",
-          "amount": "number"
-        }
-      ]
-    }
-    ```
-    - **응답**:
-    ```json
-    {
-      "status": 201,
-      "message": "이벤트 생성 성공",
-      "data": {
-        "event_id": "string",
-        "title": "string",
-        "description": "string",
-        "start_date": "string (ISO date)",
-        "end_date": "string (ISO date)",
-        "status": "ACTIVE",
-        "created_at": "string (ISO date)",
-        "updated_at": "string (ISO date)",
-        "rewards": [
-          {
-            "reward_id": "string",
-            "name": "string",
-            "description": "string",
-            "type": "string (ITEM/COIN/ETC)",
-            "amount": "number"
-          }
-        ]
-      }
-    }
-    ```
+**Body**:
 
-5. 보상 생성 [ADMIN 권한]
-    ```
-    [POST] /rewards-admin
-    ```
-  - **설명**: 새로운 보상을 생성합니다.
-  - **요청**:
-    ```json
-    {
-      "name": "string",
-      "description": "string",
-      "type": "string (ITEM/COIN/ETC)",
-      "amount": "number"
-    }
-    ```
-    - **응답**:
-    ```json
-    {
-      "status": 201,
-      "message": "보상 생성 성공",
-      "data": {
-        "reward_id": "string",
-        "name": "string",
-        "description": "string",
-        "type": "string (ITEM/COIN/ETC)",
-        "amount": "number",
-        "created_at": "string (ISO date)",
-        "updated_at": "string (ISO date)"
-      }
-    }
-    ```
-
-6. 보상 목록 조회 [ADMIN 권한]
-    ```
-    [GET] /rewards-admin
-    ```
-    - **설명**: 생성된 보상 목록을 조회합니다.
-    - **응답**:
-    ```json
-    {
-      "status": 200,
-      "message": "보상 목록 조회 성공",
-      "data": [
-        {
-          "reward_id": "string",
-          "name": "string",
-          "description": "string",
-          "type": "string (ITEM/COIN/ETC)",
-          "amount": "number",
-          "created_at": "string (ISO date)",
-          "updated_at": "string (ISO date)"
-        }
-      ]
-    }
-    ```
-
-##### 공통 응답 형식
-
-1. 성공 응답
-```typescript
+```json
 {
-  "status": number,
-  "message": "string",
-  "data": object | array
+  "user_id": "string",
+  "password": "string"
 }
 ```
 
-2. 에러 응답
-```typescript
+**Response**: jwt_token 포함
+
+#### 3. 사용자 정보 조회 (User)
+
+```http
+GET /user-info
+```
+
+#### 4. 역할 변경 (Admin)
+
+```http
+PUT /role-change
+```
+
+**Body**:
+
+```json
 {
-  "status": number,
-  "message": "string",
-  "error": {
-    "code": "string",
-    "details": "string"
-  }
+  "uid": "string",
+  "role": "user | operator | auditor | admin"
 }
 ```
 
-##### 공통 에러 코드
-- `U001`: "알 수 없는 오류가 발생했습니다."
-- `U002`: "세션이 만료되었습니다."
-- `U003`: "유효하지 않은 세션입니다."
-- `U004`: "권한이 없습니다."
-- `B001`: "잘못된 요청입니다."
-- `B002`: "요청하신 경로를 찾을 수 없습니다."
-- `V001`: "올바르지 않은 값이 전달되었습니다."
+#### 5. 이벤트 수행 (User)
 
-##### Role Enum
-```typescript
+```http
+POST /invite-friend    invite_frient_count +1
+POST /kill-monster     kill_monster_count  + 99999
+POST /login-count-up   login_count         + 1 
+```
+
+---
+
+### 🎉 Event API
+
+#### 1. 이벤트 목록 조회 (All)
+
+```http
+GET /events
+```
+| 쿼리 파라미터     | 타입   | 필수 여부 | 기본값 | 설명                   |
+|--------------|--------|-----------|--------|------------------------|
+| `event_name` | string | 선택      | 없음   | 이벤트 이름 (검색용)   |
+| `start_date` | Date   | 선택      | 없음   | 시작일 필터           |
+| `end_date`   | Date   | 선택      | 없음   | 종료일 필터           |
+| `page`       | number | 필수      | 1      | 페이지 번호           |
+| `limit`      | number | 필수      | 10     | 페이지당 항목 수 (최대 100) |
+
+#### 2. 이벤트 상세 조회 (All)
+
+```http
+GET /events/detail/:event_id
+```
+
+#### 3. 참여한 히스토리 (User)
+
+```http
+GET /events/history
+```
+
+#### 4. 보상 수령 (User)
+
+```http
+POST /events/reward-receive
+```
+
+**Body**:
+
+```json
+{
+  "event_id": "string",
+  "reward_id": "string"
+}
+```
+
+---
+
+### 🛠️ 관리자 전용 API
+
+#### 1. 모든 이벤트 목록 (deactivate, delete) (Admin)
+
+```http
+GET /events-admin
+```
+
+#### 2. 이벤트 상세 (deactivate, delete) (Admin)
+
+```http
+GET /events-admin/detail/:event_id
+```
+
+#### 3. 이벤트 히스토리 (Admin)
+
+```http
+GET /events-admin/history/:event_id
+```
+| 쿼리 파라미터      | 타입   | 필수 여부 | 기본값 | 설명                          |
+|---------------|--------|-----------|--------|-------------------------------|
+| `uid`         | string | 선택      | 없음   | 사용자 UID (필터 조건)        |
+| `start_date`  | Date   | 선택      | 없음   | 조회 시작일                   |
+| `end_date`    | Date   | 선택      | 없음   | 조회 종료일                   |
+| `page`        | number | 필수      | 1      | 페이지 번호                   |
+| `limit`       | number | 필수      | 10     | 페이지당 항목 수 (최대 100)   |
+
+#### 4. 이벤트 생성 (Admin)
+
+```http
+POST /events-admin
+```
+
+**Body**:
+
+```json
+{
+  "name": "string",
+  "description": "string",
+  "start_date": "ISO date",
+  "end_date": "ISO date",
+  "reward_array": ["string", "..."], // reward의 id
+  "contition_type": "login | invite_friend | kill_monster" ,
+  "condition_value": "integer", // bigger then 1
+  "is_active": "boolean" // default true,
+}
+```
+
+#### 5. 보상 생성 (Admin)
+
+```http
+POST /rewards-admin
+```
+```json
+{
+  "name": "string",
+  "description": "string",
+  "type": "point | coupon | product",
+  "amount": "ISO date", // bigger then 1
+}
+```
+
+#### 6. 보상 목록 (Admin)
+
+```http
+GET /rewards-admin
+```
+| 쿼리 파라미터       | 타입   | 필수 여부 | 기본값 | 설명                      |
+|----------------|--------|-----------|--------|---------------------------|
+| `reward_name`  | string | 선택      | 없음   | 보상 이름 (검색용)        |
+| `page`         | number | 필수      | 1      | 페이지 번호               |
+| `limit`        | number | 필수      | 10     | 페이지당 항목 수 (최대 100) |
+
+---
+
+## ⚙️ 공통 정보
+
+### 🔁 공통 응답 형식
+
+**성공:**
+
+```json
+{
+  "result": "success",
+  "code": "string",
+  "message": "string",
+  "data": "any | undifiend"
+}
+```
+**실패:**
+
+```json
+{
+  "result": "failed", // msa에서 실패시 "msa_failed"
+  "code": "string",
+  "message": "string",
+  "data": "any | undifiend"
+}
+```
+
+### 🧩 공통 에러 코드
+
+* `U001`: 알 수 없는 오류
+* `U002`: 세션 만료
+* `U003`: 유효하지 않은 세션
+* `U004`: 권한 없음
+* `B001`: 잘못된 요청
+* `B002`: 경로 없음
+* `V001`: 잘못된 값 전달
+
+### 🎭 Role Enum
+
+```ts
 enum Role {
   USER = 'user',
   OPERATOR = 'operator',
   AUDITOR = 'auditor',
   ADMIN = 'admin'
+}
+```
+
+### 🎭 Condition Enum
+
+```ts
+export enum ConditionType {
+    LOGIN = 'login',
+    INVITE_FRIEND = 'invite_friend',
+    KILL_MONSTER = 'kill_monster',
+}
+```
+
+### 🎭 Reward Enum
+```ts
+export enum RewardType {
+    POINT = 'point',
+    COUPON = 'coupon',
+    PRODUCT = 'product',
 }
 ```
