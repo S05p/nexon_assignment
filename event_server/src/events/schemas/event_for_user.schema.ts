@@ -11,7 +11,7 @@ export class EventForUser {
     @Prop({ required: true })
     uid: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true , default: Date.now })
     created_at: Date;
 }
 

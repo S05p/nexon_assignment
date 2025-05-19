@@ -89,11 +89,16 @@ export class EventService {
 
     async getEventDetail(event_id: string, isAdmin: boolean = false) {
         const query: any = { _id: event_id };
+
+        let event_for_user_count = 0;
+        let event_for_user_list = [];
         
         // 관리자가 아닌 경우에만 삭제/비활성화 필터 적용
         if (!isAdmin) {
             query.is_deleted = false;
             query.is_active = true;
+            const event_for_user_list = await this.eventForUserModel.find({ event_id: event_id });
+            const event_for_user_count = event_for_user_list.length;
         }
         
         const event = await this.eventModel.findOne(query);
@@ -102,11 +107,12 @@ export class EventService {
         }
         const event_for_reward = await this.eventForRewardModel.find({ event_id: event_id });
         const rewards = await this.rewardModel.find({ _id: { $in: event_for_reward.map(reward => reward.reward_id)}});
-        const event_for_user_count = await this.eventForUserModel.countDocuments({ event_id: event_id });
+        
         return {
             "event": event,
             "rewards": rewards,
             "event_for_user_count": event_for_user_count,
+            "event_for_user_list": event_for_user_list,
         };
     }
 
@@ -137,12 +143,10 @@ export class EventService {
         if (event_for_user) {
             throw ApiResult.EVENT_FOR_USER_ALREADY_EXISTS;
         }
-        console.log("여기서 발생 11");
         const user_history = await this.userHistoryModel.findOne({ uid: uid });
         if (!user_history) {
             throw ApiResult.UNKNOWN_ERROR;
         }
-        console.log("여기서 발생 22");
         if (event.condition_type === ConditionType.LOGIN) {
             if (user_history.login_count < event.condition_value) {
                 throw ApiResult.EVENT_CONDITION_NOT_MET;
@@ -156,13 +160,12 @@ export class EventService {
                 throw ApiResult.EVENT_CONDITION_NOT_MET;
             }
         }
-        console.log("여기서 발생 33");
         const event_for_reward = await this.eventForRewardModel.find({ event_id: event_id });
         const rewards = await this.rewardModel.find({ _id: { $in: event_for_reward.map(reward => reward.reward_id)}});
         for (const reward of rewards) {
             await this.userInventoryModel.create({ uid: uid, reward_id: reward._id, amount: reward.amount });
         }
-        console.log("여기서 발생 66");
+        await this.eventForUserModel.create({ event_id: event_id, uid: uid });
     }
 
     async getRewardList(getRewardListQueryDto: GetRewardListQueryDto) {
@@ -183,10 +186,9 @@ export class EventService {
         const { uid } = getHistoryListBodyDto;
         const { start_date } = getHistoryListQueryDto;
         
-        // 현재 진행 중인 이벤트 목록 조회
+        // 완료한 이벤트 목록 전체 조회
         // 일반 유저도 참가한 이벤트는 삭제, 비활성화되었어도 조회가능
         const event_list = await this.eventModel.find({ 
-            start_date: { $lte: start_date }, 
             end_date: { $gte: start_date }
         });
 
