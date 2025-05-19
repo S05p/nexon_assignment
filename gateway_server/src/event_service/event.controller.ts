@@ -26,7 +26,7 @@ export class EventController {
     }
   }
 
-  @Get('/:event_id')
+  @Get('/detail/:event_id')
   @Roles(Role.USER, Role.OPERATOR, Role.AUDITOR, Role.ADMIN)
   async getEventDetail(@Param('event_id') eventId: string) {
     try {

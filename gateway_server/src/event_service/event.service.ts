@@ -49,7 +49,7 @@ export class EventService {
 
     async getEventDetail(eventId: string) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: `/events/${eventId}`,
+            url: `/events/detail/${eventId}`,
             method: 'GET',
         });
 

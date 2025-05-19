@@ -34,7 +34,7 @@ export class UserService {
     });
 
     await this.userHistoryModel.create({
-      uid: newUser.user_id,
+      uid: newUser.id,
       login_count: 0,
       invited_friend_count: 0,
       kill_monster_count: 0,
@@ -109,12 +109,12 @@ export class UserService {
       throw ApiResult.UNKNOWN_ERROR;
     }
 
-    const user_invite_history = await this.userInventoryModel.find({ uid: user.user_id });
+    const user_inventory_history = await this.userInventoryModel.find({ uid: user.user_id });
 
     return {
       user: user,
       user_history: user_history,
-      user_invite_history: user_invite_history,
+      user_inventory_history: user_inventory_history,
     }
   }
 

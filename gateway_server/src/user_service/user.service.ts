@@ -51,7 +51,7 @@ export class UserService {
         });
 
         if (response_data.result === ApiResult.IS_OK.result) {
-            res.cookie('jwt', response_data.jwt_token, {
+            res.cookie('jwt', response_data.data.jwt_token, {
                 httpOnly: true,
                 secure: false, 
                 sameSite: 'lax',
@@ -62,8 +62,8 @@ export class UserService {
         }
 
         return {
-            jwt_token: response_data.jwt_token,
-            role: response_data.role,
+            jwt_token: response_data.data.jwt_token,
+            role: response_data.data.role,
         };
     }
 

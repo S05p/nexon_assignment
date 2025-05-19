@@ -22,7 +22,7 @@ export class EventController {
         }
     }
 
-    @Get('/:event_id')
+    @Get('/detail/:event_id')
     async getEventDetail(@Param() getEventDetailPathDto: GetEventDetailPathDto) {
         try {
             const result = await this.eventService.getEventDetail(getEventDetailPathDto.event_id, false)
