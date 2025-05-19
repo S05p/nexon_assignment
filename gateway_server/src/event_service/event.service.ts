@@ -18,7 +18,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async getAdminEventDetail(eventId: string) {
@@ -30,7 +30,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
 
@@ -44,7 +44,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async getEventDetail(eventId: string) {
@@ -56,7 +56,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async createEvent(user: any, data: any) {
@@ -75,7 +75,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async createReward(user: any, data: any) {
@@ -91,7 +91,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async getRewardList(query: any) {
@@ -104,7 +104,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async getHistoryList(user: any, query: any) {
@@ -120,7 +120,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async getAdminHistoryList(eventId: string, query: any) {
@@ -133,7 +133,7 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 
     async createRewardReceipt(user: any, data: Record<string, any>) {
@@ -150,6 +150,6 @@ export class EventService {
         if (response_data.result !== ApiResult.IS_OK.result) {
             throw new MsaFailed(response_data.code, response_data.message, response_data.data);
         }
-        return response_data;
+        return response_data.data;
     }
 }
