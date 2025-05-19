@@ -6,7 +6,7 @@
 
 ### 🔍 서버 Flow
 ***
-![Image](https://github.com/user-attachments/assets/f204393f-bf35-48a6-874c-c58b6bd46595)
+![Image](https://github.com/user-attachments/assets/173fd085-9b5a-45d7-8d5a-a00bbba03d12)
 
 ### ✅ 준비 사항
 ***
