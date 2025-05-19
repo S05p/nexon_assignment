@@ -20,6 +20,7 @@
 	*	추후 에러 코드만 별도 라이브러리화 가능 → 커뮤니케이션 비용 감소
 * `Global Filter`를 통한 에러 처리 통합
 	*	모든 예외를 ExceptionFilter에서 핸들링
+  * User input validator 핸들링
 	*	ApiResult는 에러 코드 및 메시지를 모은 enum-like 상수 집합
 	*	`make_api_result` 함수를 통해 통일된 응답 포맷(result, code, message, data)을 제공
 *	`MongoDB` 트랜잭션 로직 추상화

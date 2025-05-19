@@ -11,9 +11,8 @@ async function bootstrap() {
     whitelist: true,
     forbidNonWhitelisted: true,
   }));
-  
-  app.useGlobalFilters(new ValidationExceptionFilter());
   app.useGlobalFilters(new ApiExceptionFilter());
+  app.useGlobalFilters(new ValidationExceptionFilter());
   await app.listen(process.env.PORT ?? 3002);
 }
 bootstrap();
