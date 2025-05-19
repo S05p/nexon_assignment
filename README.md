@@ -193,9 +193,9 @@ Gateway: http://localhost:3000
 
 #### Event
 
-1-1 이벤트 목록 조회 []
+1. 이벤트 목록 조회
     ```
-    GET /events 
+    [GET] /events 
     ```
   - **설명**: 현재 진행 중인 이벤트 목록을 조회합니다.
   - **응답**:
@@ -225,7 +225,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 1.2 이벤트 상세 조회
+2. 이벤트 상세 조회
     ```
     GET /events/detail/:event_id
     ```
@@ -255,7 +255,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 1.3 이벤트 히스토리 조회
+3. 이벤트 히스토리 조회
     ```
     GET /events/history
     ```
@@ -282,7 +282,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 1.4 보상 수령
+4. 보상 수령
     ```
     [POST] /events/reward-receive
     ```
@@ -309,9 +309,9 @@ Gateway: http://localhost:3000
     }
     ```
 
-##### 2. 관리자 API
+##### 관리자 API
 
-* 2.1 이벤트 목록 조회 (관리자)
+1. 이벤트 목록 조회 (관리자)
     ```
     [GET] /events-admin
     ```
@@ -345,7 +345,7 @@ Gateway: http://localhost:3000
 }
 ```
 
-* 2.2 이벤트 상세 조회 (관리자)
+2. 이벤트 상세 조회 (관리자)
     ```
     [GET] /events-admin/detail/:event_id
     ```
@@ -377,7 +377,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 2.3 이벤트 히스토리 조회 (관리자)
+3. 이벤트 히스토리 조회 (관리자)
     ```
     GET /events-admin/history/:event_id
     ```
@@ -404,7 +404,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 2.4 이벤트 생성 (관리자)
+4. 이벤트 생성 (관리자)
     ```
     [POST] /events-admin
     ```
@@ -453,7 +453,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-### 2.5 보상 생성 (관리자)
+5. 보상 생성 (관리자)
     ```
     [POST] /rewards-admin
     ```
@@ -484,7 +484,7 @@ Gateway: http://localhost:3000
     }
     ```
 
-* 2.6 보상 목록 조회 (관리자)
+6. 보상 목록 조회 (관리자)
     ```
     [GET] /rewards-admin
     ```
@@ -508,9 +508,9 @@ Gateway: http://localhost:3000
     }
     ```
 
-##### 3. 공통 응답 형식
+##### 공통 응답 형식
 
-* 3.1 성공 응답
+1. 성공 응답
 ```json
 {
   "status": number,
@@ -519,7 +519,7 @@ Gateway: http://localhost:3000
 }
 ```
 
-* 3.2 에러 응답
+2. 에러 응답
 ```json
 {
   "status": number,
