@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { Event, EventDocument } from './event.schema';
-import { Reward, RewardDocument } from './reward.schema';
-import { EventForReward, EventForRewardDocument } from './event_for_reward.schema';
-import { EventForUser, EventForUserDocument } from './event_for_user.schema';
+import { Event, EventDocument } from './schemas/event.schema';
+import { Reward, RewardDocument } from './schemas/reward.schema';
+import { EventForReward, EventForRewardDocument } from './schemas/event_for_reward.schema';
+import { EventForUser, EventForUserDocument } from './schemas/event_for_user.schema';
 import { ConfigService } from '@nestjs/config';
 import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto   } from './event.dto';
 import { ApiResult } from '../common/api_result';

@@ -79,6 +79,7 @@ export class UserService {
     const returnData: Record<string, any> = {
       jwt_token: token,
       user_id: user.user_id,
+      role: user.role
     }
 
     return returnData;

@@ -11,7 +11,7 @@ export class UserService {
         this.authAdapterService = authAdapterService;
     }
 
-    async login(loginUserDto: LoginUserDto, req: Request, res: Response): Promise<void> {
+    async login(loginUserDto: LoginUserDto, req: Request, res: Response): Promise<Record<string, any>> {
         const token = req.cookies?.jwt;
         if (token) {
             throw ApiResult.ALREADY_LOGGED_IN;
@@ -25,7 +25,7 @@ export class UserService {
 
         if (response_data.result === ApiResult.IS_OK.result) {
             // JWT 토큰을 쿠키에 설정
-            res.cookie('jwt', response_data.jwt_token, {
+            res.cookie('jwt', response_data.data.jwt_token, {
                 httpOnly: true,
                 secure: false, // 프로덕션 환경에서만 HTTPS 사용
                 sameSite: 'lax',
@@ -34,9 +34,16 @@ export class UserService {
         } else {
             throw new MsaFailed(response_data.code, response_data.message);
         }
+
+        const returnData: Record<string, any> = {
+            jwt_token: response_data.data.jwt_token,
+            role: response_data.data.role,
+        };
+
+        return returnData;
     }   
 
-    async signup(signupUserDto: SignupUserDto, req: Request, res: Response): Promise<void> {
+    async signup(signupUserDto: SignupUserDto, req: Request, res: Response): Promise<Record<string, any>> {
         const token = req.cookies?.jwt;
         if (token) {
             throw ApiResult.ALREADY_LOGGED_IN;
@@ -59,6 +66,12 @@ export class UserService {
         } else {
             throw new MsaFailed(response_data.code, response_data.message);
         }
+        const returnData: Record<string, any> = {
+            jwt_token: response_data.jwt_token,
+            role: response_data.role,
+        };
+
+        return returnData;
     }
 
     async roleChange(roleChangeDto: RoleChangeDto): Promise<void> {

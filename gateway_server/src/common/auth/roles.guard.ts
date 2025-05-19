@@ -6,6 +6,7 @@ import {
   import { Reflector } from '@nestjs/core';
   import { ROLES_KEY } from '../common-variables';
   import { Role } from './auth.dto';
+  import { ApiResult } from '../api_result';
   
   @Injectable()
   export class RolesGuard implements CanActivate {
@@ -19,6 +20,9 @@ import {
       if (!requiredRoles.length) return true;
   
       const user = context.switchToHttp().getRequest().user;
-      return requiredRoles.includes(user?.role);
+      if (!user || !requiredRoles.includes(user.role)) {
+        throw ApiResult.INVALID_ROLE;
+      }
+      return true;
     }
   }

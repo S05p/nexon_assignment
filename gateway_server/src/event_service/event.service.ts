@@ -1,16 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { AuthAdapterService } from "../common/adapters/internal-service.service";
+import { EventAdapterService } from "../common/adapters/internal-service.service";
 import { ApiResult, MsaFailed } from "../common/api_result";
 import { ApiError } from "../common/api_error";
 import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto } from "./event.dto";
 
 @Injectable()
 export class EventService {
-    constructor(private readonly authAdapterService: AuthAdapterService) {}
+    constructor(private readonly eventAdapterService: EventAdapterService) {
+        this.eventAdapterService = eventAdapterService;
+    }
+
 
     async getEventList(query: GetEventListQueryDto) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: '/event',
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '',
             method: 'GET',
             params: query,
         });
@@ -22,8 +25,8 @@ export class EventService {
     }
 
     async getEventDetail(eventId: string) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: `/event/${eventId}`,
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: `/${eventId}`,
             method: 'GET',
         });
 
@@ -34,8 +37,8 @@ export class EventService {
     }
 
     async createEvent(eventData: CreateEventDto) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: '/event/admin/event',
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '/admin/event',
             method: 'POST',
             data: eventData,
         });
@@ -47,8 +50,8 @@ export class EventService {
     }
 
     async createReward(rewardData: CreateRewardDto) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: '/event/admin/reward',
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '/admin/reward',
             method: 'POST',
             data: rewardData,
         });
@@ -60,8 +63,8 @@ export class EventService {
     }
 
     async getRewardList(query: GetRewardListQueryDto) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: '/event/admin/reward',
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '/admin/reward',
             method: 'GET',
             params: query,
         });
@@ -73,7 +76,7 @@ export class EventService {
     }
 
     async getHistoryList(query: GetHistoryListQueryDto) {
-        const response_data = await this.authAdapterService.sendRequest({
+        const response_data = await this.eventAdapterService.sendRequest({
             url: '/event/history',
             method: 'GET',
             params: query,
@@ -86,8 +89,8 @@ export class EventService {
     }
 
     async getAdminHistoryList(query: GetAdminHistoryListQueryDto) {
-        const response_data = await this.authAdapterService.sendRequest({
-            url: '/event/admin/history',
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '/admin/history',
             method: 'GET',
             params: query,
         });
@@ -99,7 +102,7 @@ export class EventService {
     }
 
     async createRewardReceipt(data: CreateRewardReceiptDto) {
-        const response_data = await this.authAdapterService.sendRequest({
+        const response_data = await this.eventAdapterService.sendRequest({
             url: '/event/reward/receive',
             method: 'POST',
             data: data,

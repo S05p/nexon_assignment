@@ -17,8 +17,8 @@ export class UserController {
   @Post('/login')
   async login(@Body() loginUserDto: LoginUserDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      await this.userService.login(loginUserDto, req,res);
-      return make_api_result(ApiResult.IS_OK);
+      const result = await this.userService.login(loginUserDto, req,res);
+      return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
       if (error instanceof ApiError) {
         return make_api_result(error);
@@ -31,8 +31,8 @@ export class UserController {
   @Post('/signup')
   async signup(@Body() signupUserDto: SignupUserDto, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
     try {
-      await this.userService.signup(signupUserDto, req, res);
-      return make_api_result(ApiResult.IS_OK);
+      const result = await this.userService.signup(signupUserDto, req, res);
+      return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
       if (error instanceof ApiError) {
         return make_api_result(error);
