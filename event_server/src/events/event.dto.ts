@@ -76,10 +76,6 @@ export class GetEventListQueryDto {
     @IsDate()
     end_date?: Date;
 
-    @IsOptional()
-    @IsBoolean()
-    is_active?: boolean;
-
     @IsInt()
     @Min(1)
     page: number;

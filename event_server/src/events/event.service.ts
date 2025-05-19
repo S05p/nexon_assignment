@@ -59,9 +59,16 @@ export class EventService {
         const newReward = await this.rewardModel.create(createRewardDto);
     }
 
-    async getEventList(getEventListQueryDto: GetEventListQueryDto) {
-        const { event_name, start_date, end_date, is_active, page, limit } = getEventListQueryDto;
+    async getEventList(getEventListQueryDto: GetEventListQueryDto, isAdmin: boolean = false) {
+        const { event_name, start_date, end_date, page, limit } = getEventListQueryDto;
         const query: any = {};
+        
+        // 관리자가 아닌 경우에만 삭제/비활성화 필터 적용
+        if (!isAdmin) {
+            query.is_deleted = false;
+            query.is_active = true;
+        }
+        
         if (event_name) {
             query.name = { $regex: event_name, $options: 'i' };
         }
@@ -71,9 +78,7 @@ export class EventService {
         if (end_date) {
             query.end_date = { $lte: end_date };
         }
-        if (is_active) {
-            query.is_active = is_active;  
-        }
+
         const total = await this.eventModel.countDocuments(query);
         const events = await this.eventModel.find(query).skip((page - 1) * limit).limit(limit);
         return {
@@ -82,8 +87,16 @@ export class EventService {
         };
     }
 
-    async getEventDetail(event_id: string) {
-        const event = await this.eventModel.findById(event_id);
+    async getEventDetail(event_id: string, isAdmin: boolean = false) {
+        const query: any = { _id: event_id };
+        
+        // 관리자가 아닌 경우에만 삭제/비활성화 필터 적용
+        if (!isAdmin) {
+            query.is_deleted = false;
+            query.is_active = true;
+        }
+        
+        const event = await this.eventModel.findOne(query);
         if (!event) {
             throw ApiResult.EVENT_NOT_FOUND;        
         }
@@ -115,7 +128,8 @@ export class EventService {
 
     async createRewardReceipt(createRewardReceiptDto: CreateRewardReceiptDto) {
         const { event_id, uid } = createRewardReceiptDto;
-        const event = await this.getEvent(event_id);
+        // 삭제, 비활성화 X, 종료일 지나지 않은 이벤트만 수령 가능
+        const event = await this.eventModel.findOne({ _id: event_id, "is_deleted": false, "is_active": true, "end_date": { $gte: new Date() } });
         if (!event) {
             throw ApiResult.EVENT_NOT_FOUND;
         }
@@ -166,12 +180,12 @@ export class EventService {
         const { uid, start_date } = getHistoryListQueryDto;
         
         // 현재 진행 중인 이벤트 목록 조회
+        // 일반 유저도 참가한 이벤트는 삭제, 비활성화되었어도 조회가능
         const event_list = await this.eventModel.find({ 
             start_date: { $lte: start_date }, 
-            end_date: { $gte: start_date } 
+            end_date: { $gte: start_date }
         });
 
-        // 해당 유저의 이벤트 수령 내역 조회 (populate 사용)
         const received_event_for_user = await this.eventForUserModel
             .find({ 
                 event_id: { $in: event_list.map(event => event._id) }, 

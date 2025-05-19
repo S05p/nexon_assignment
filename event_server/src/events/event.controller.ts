@@ -4,28 +4,28 @@ import { ApiResult, make_api_result } from '../common/api_result';
 import { ApiError } from '../common/api_result';
 import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto} from './event.dto';
 
-@Controller('') 
+@Controller('/events')
 export class EventController {
     constructor(private readonly eventService: EventService) {}
 
     @Get('')
     async getEventList(@Query() getEventListQueryDto: GetEventListQueryDto) {
         try {
-        const result = await this.eventService.getEventList(getEventListQueryDto)
-        return make_api_result(ApiResult.IS_OK, result);
+            const result = await this.eventService.getEventList(getEventListQueryDto, false)
+            return make_api_result(ApiResult.IS_OK, result);
         } catch (error) {
-        if (error instanceof ApiError) {
-            return make_api_result(error);
-        }
-        console.error('Error in getEvent:', error);
-        return make_api_result(ApiResult.UNKNOWN_ERROR);
+            if (error instanceof ApiError) {
+                return make_api_result(error);
+            }
+            console.error('Error in getEvent:', error);
+            return make_api_result(ApiResult.UNKNOWN_ERROR);
         }
     }
 
     @Get('/:event_id')
     async getEventDetail(@Param() getEventDetailPathDto: GetEventDetailPathDto) {
         try {
-            const result = await this.eventService.getEventDetail(getEventDetailPathDto.event_id)
+            const result = await this.eventService.getEventDetail(getEventDetailPathDto.event_id, false)
             return make_api_result(ApiResult.IS_OK, result);
         } catch (error) {
             if (error instanceof ApiError) {
@@ -50,7 +50,7 @@ export class EventController {
         }
     }
 
-    @Post('/reward/receive')
+    @Post('/reward-receive')
     async createRewardReceipt(@Body() createRewardReceiptDto: CreateRewardReceiptDto) {
         try {
             await this.eventService.createRewardReceipt(createRewardReceiptDto)
@@ -65,9 +65,37 @@ export class EventController {
     }
 } 
 
-@Controller('/admin') 
+@Controller('/events/admin') 
 export class AdminController {
     constructor(private readonly eventService: EventService) {}
+
+    @Get('')
+    async getEventList(@Query() getEventListQueryDto: GetEventListQueryDto) {
+        try {
+            const result = await this.eventService.getEventList(getEventListQueryDto, true)
+            return make_api_result(ApiResult.IS_OK, result);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                return make_api_result(error);
+            }
+            console.error('Error in getEvent:', error);
+            return make_api_result(ApiResult.UNKNOWN_ERROR);
+        }
+    }
+
+    @Get('/:event_id')
+    async getEventDetail(@Param() getEventDetailPathDto: GetEventDetailPathDto) {
+        try {
+            const result = await this.eventService.getEventDetail(getEventDetailPathDto.event_id, true)
+            return make_api_result(ApiResult.IS_OK, result);
+        } catch (error) {
+            if (error instanceof ApiError) {
+                return make_api_result(error);
+            }
+            console.error('Error in getEventDetail:', error);
+            return make_api_result(ApiResult.UNKNOWN_ERROR);
+        }
+    }
 
     @Get('/history')
     async getAdminHistoryList(@Query() getAdminHistoryListQueryDto: GetAdminHistoryListQueryDto) {
@@ -83,17 +111,17 @@ export class AdminController {
         }
     }
 
-    @Post('/event')
+    @Post('')
     async createEvent(@Body() createEventDto: CreateEventDto) {
         try {
-        await this.eventService.createEvent(createEventDto)
-        return make_api_result(ApiResult.IS_OK);
+            await this.eventService.createEvent(createEventDto)
+            return make_api_result(ApiResult.IS_OK);
         } catch (error) {
-        if (error instanceof ApiError) {
-            return make_api_result(error);
-        }
-        console.error('Error in createEvent:', error);
-        return make_api_result(ApiResult.UNKNOWN_ERROR);
+            if (error instanceof ApiError) {
+                return make_api_result(error);
+            }
+            console.error('Error in createEvent:', error);
+            return make_api_result(ApiResult.UNKNOWN_ERROR);
         }
     }
 

@@ -9,9 +9,8 @@ import { AuthModule } from './common/auth/auth.module';
 import { InternalServiceModule } from './common/adapters/internal-service.module';
 import { UserModule } from './user_service/user.module';
 import { EventModule } from './event_service/event.module';
-import { AppService } from './app.service';
 import { AppLogger } from './common/logger/app-logger.service';
-
+import { AppController } from './app.controller';
 @Module({
   imports: [
     // 환경변수 설정
@@ -31,7 +30,8 @@ import { AppLogger } from './common/logger/app-logger.service';
     UserModule,
     EventModule,
   ],
-  providers: [AppLogger, AppService],
+  controllers: [AppController],
+  providers: [AppLogger],
   exports: [AppLogger],
 })
 export class AppModule implements NestModule {

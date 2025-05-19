@@ -1,8 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { EventAdapterService } from "../common/adapters/internal-service.service";
 import { ApiResult, MsaFailed } from "../common/api_result";
-import { ApiError } from "../common/api_error";
-import { CreateEventDto, CreateRewardDto, GetEventListQueryDto, GetEventDetailPathDto, CreateRewardReceiptDto, GetRewardListQueryDto, GetHistoryListQueryDto, GetAdminHistoryListQueryDto } from "./event.dto";
 
 @Injectable()
 export class EventService {
@@ -10,10 +8,35 @@ export class EventService {
         this.eventAdapterService = eventAdapterService;
     }
 
-
-    async getEventList(query: GetEventListQueryDto) {
+    async getAdminEventList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '',
+            url: '/events/admin',
+            method: 'GET',
+            params: query,
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
+        return response_data;
+    }
+
+    async getAdminEventDetail(eventId: string) {
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: `/events/admin/${eventId}`,
+            method: 'GET',
+        });
+
+        if (response_data.result !== ApiResult.IS_OK.result) {
+            throw new MsaFailed(response_data.code, response_data.message);
+        }
+        return response_data;
+    }
+
+
+    async getEventList(query: any) {
+        const response_data = await this.eventAdapterService.sendRequest({
+            url: '/events',
             method: 'GET',
             params: query,
         });
@@ -26,7 +49,7 @@ export class EventService {
 
     async getEventDetail(eventId: string) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: `/${eventId}`,
+            url: `/events/${eventId}`,
             method: 'GET',
         });
 
@@ -36,11 +59,11 @@ export class EventService {
         return response_data;
     }
 
-    async createEvent(eventData: CreateEventDto) {
+    async createEvent(data: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/admin/event',
+            url: '/events/admin',
             method: 'POST',
-            data: eventData,
+            data: data,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
@@ -49,11 +72,11 @@ export class EventService {
         return response_data;
     }
 
-    async createReward(rewardData: CreateRewardDto) {
+    async createReward(data: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/admin/reward',
+            url: '/events/admin/reward',
             method: 'POST',
-            data: rewardData,
+            data: data,
         });
 
         if (response_data.result !== ApiResult.IS_OK.result) {
@@ -62,9 +85,9 @@ export class EventService {
         return response_data;
     }
 
-    async getRewardList(query: GetRewardListQueryDto) {
+    async getRewardList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/admin/reward',
+            url: '/events/admin/reward',
             method: 'GET',
             params: query,
         });
@@ -75,9 +98,9 @@ export class EventService {
         return response_data;
     }
 
-    async getHistoryList(query: GetHistoryListQueryDto) {
+    async getHistoryList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/event/history',
+            url: '/events/history',
             method: 'GET',
             params: query,
         });
@@ -88,9 +111,9 @@ export class EventService {
         return response_data;
     }
 
-    async getAdminHistoryList(query: GetAdminHistoryListQueryDto) {
+    async getAdminHistoryList(query: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/admin/history',
+            url: '/events/admin/history',
             method: 'GET',
             params: query,
         });
@@ -101,9 +124,9 @@ export class EventService {
         return response_data;
     }
 
-    async createRewardReceipt(data: CreateRewardReceiptDto) {
+    async createRewardReceipt(data: any) {
         const response_data = await this.eventAdapterService.sendRequest({
-            url: '/event/reward/receive',
+            url: '/events/reward-receive',
             method: 'POST',
             data: data,
         });
