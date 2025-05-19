@@ -21,7 +21,7 @@
 * `Global Filter`를 통한 에러 처리 통합
 	*	모든 예외를 ExceptionFilter에서 핸들링
 	*	ApiResult는 에러 코드 및 메시지를 모은 enum-like 상수 집합
-	*	make_api_result()를 통해 통일된 응답 포맷(result, code, message, data)을 제공
+	*	`make_api_result` 함수를 통해 통일된 응답 포맷(result, code, message, data)을 제공
 *	`MongoDB` 트랜잭션 로직 추상화
 	* MongoDB는 기본적으로 요청 단위 처리이지만, 복수 컬렉션 조작 등 데이터 정합성이 중요한 작업을 위해 withTransaction() 함수 제공
 	*	트랜잭션 시작/커밋/롤백 로직을 공통화하여, 서비스 로직은 비즈니스에만 집중할 수 있도록 설계
@@ -69,8 +69,8 @@ docker compose up --build
 
 1. [`[POST] /signin` (role: admin)](#1-회원가입) → jwt\_token authorization Bearer token에 입력
 2. [`[POST] /rewards-admin`](#5-보상-생성-admin) → 보상 생성
-3. [`[GET] /rewards-admin`](#6-보상-목록-admin) → reward list → 생성된 reward\_id 저장
-4. [`[POST] /events-admin`](#4-이벤트-생성-admin) → reward\_id 포함 이벤트 생성
+3. [`[GET] /rewards-admin`](#6-보상-목록-admin) → reward list → 생성된 reward id 저장
+4. [`[POST] /events-admin`](#4-이벤트-생성-admin) → reward id 포함 이벤트 생성
 6. [`[GET] /events` → 전체 이벤트 목록 확인](#1-이벤트-목록-조회-all) → event id 저장
 
 ### 🙋‍♂️ User 테스트
@@ -79,12 +79,12 @@ docker compose up --build
 2. [`[GET] /events`](#1-이벤트-목록-조회-all) → 참여 가능한 이벤트 확인 (event\_id 저장) 
 3. [`[POST] /users/kill-monster`](#5-이벤트-수행-user) → 더미 이벤트 수행 (event 조건에 맞춰서 수행)
 4. [`[POST] /events/reward-receive`](#4-보상-수령-user) → 보상 수령
-5. [`[GET] /events/history`](#3-참여한-히스토리-user) → 수령한 아이템 목록 확인
-6. [`[GET] /users/user-info`](#3-사용자-정보-조회-user) → 사용자 전체 정보 확인
+5. [`[GET] /events/history`](#3-참여한-히스토리-user) → 역대 이벤트 전부 출력 (보상받았는지 flag 전달)
+6. [`[GET] /users/user-info`](#3-사용자-정보-조회-user) → 사용자 전체 정보 확인 (inventory에서 user item 확인)
 
 ### 🔁 Admin 재로그인
 
-* [`[GET] /events-admin/history/{event_id}`]() → 전체 사용자 히스토리 확인
+* [`[GET] /events-admin/history/{event_id}`]() → 해당 이벤트의 보상받은 유저 확인
 
 ---
 
@@ -152,7 +152,7 @@ PUT /role-change
 ```http
 POST /invite-friend    invite_frient_count +1
 POST /kill-monster     kill_monster_count  + 99999
-POST /login-count-up   login_count         + 1 
+POST /login-count-up   login_count         + 5
 ```
 
 ---
