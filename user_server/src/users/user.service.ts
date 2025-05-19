@@ -125,12 +125,14 @@ export class UserService {
       throw ApiResult.USER_NOT_FOUND;
     }
 
-    const user_history = await this.userHistoryModel.findOne({ uid: user.user_id });
-    if (!user_history) {
-      throw ApiResult.UNKNOWN_ERROR;
+    const updateResult = await this.userHistoryModel.updateOne(
+      { uid: user.id },
+      { $inc: { invited_friend_count: 1 } }
+    );
+  
+    if (updateResult.matchedCount === 0) {
+      throw ApiResult.USER_NOT_FOUND; 
     }
-    user_history.invited_friend_count += 1;
-    await user_history.save();
   }
 
   async killMonster(uidBody: UidBody) {
@@ -139,12 +141,14 @@ export class UserService {
       throw ApiResult.USER_NOT_FOUND;
     }
 
-    const user_history = await this.userHistoryModel.findOne({ uid: user.id });
-    if (!user_history) {
-      throw ApiResult.UNKNOWN_ERROR;
+    const updateResult = await this.userHistoryModel.updateOne(
+      { uid: user.id },
+      { $inc: { kill_monster_count: 99999 } }
+    );
+  
+    if (updateResult.matchedCount === 0) {
+      throw ApiResult.USER_NOT_FOUND;
     }
-    user_history.kill_monster_count += 99999;
-    await user_history.save();
   }
 
   async login_count_up(uidBody: UidBody) {
@@ -153,11 +157,13 @@ export class UserService {
       throw ApiResult.USER_NOT_FOUND;
     }
 
-    const user_history = await this.userHistoryModel.findOne({ uid: user.id });
-    if (!user_history) {
-      throw ApiResult.UNKNOWN_ERROR;
+    const updateResult = await this.userHistoryModel.updateOne(
+      { uid: user.id },
+      { $inc: { login_count: 5 } }
+    );
+  
+    if (updateResult.matchedCount === 0) {
+      throw ApiResult.USER_NOT_FOUND;
     }
-    user_history.login_count += 5;
-    await user_history.save();
   }
 }

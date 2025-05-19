@@ -21,7 +21,7 @@ git clone https://github.com/S05p/nexon_assignment.git
 cd nexon_assignment
 
 # docker 이미지 빌드 및 실행
-docker compose up --build
+docker compose up --build (최초 실행시 2~3분 소요)
 
 # 서비스 확인
 Gateway: http://localhost:3000

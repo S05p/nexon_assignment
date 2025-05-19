@@ -66,7 +66,7 @@ export class UserController {
   @Post('/invite-friend')
   async inviteFriend(@Body() uidBody: UidBody) {
     try {
-      this.userService.inviteFriend(uidBody);
+      await this.userService.inviteFriend(uidBody);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -80,7 +80,7 @@ export class UserController {
   @Post('/kill-monster')
   async killMonster(@Body() uidBody: UidBody) {
     try {
-      this.userService.killMonster(uidBody);
+      await this.userService.killMonster(uidBody);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       if (error instanceof ApiError) {
@@ -94,7 +94,7 @@ export class UserController {
   @Post('/login-count-up')  
   async loginCountUp(@Body() uidBody: UidBody) {
     try {
-      this.userService.login_count_up(uidBody);
+      await this.userService.login_count_up(uidBody);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
       if (error instanceof ApiError) {

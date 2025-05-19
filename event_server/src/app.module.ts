@@ -41,6 +41,10 @@ import { EventModule } from './events/event.module';
         return {
           uri,
           dbName: 'nesonAssignment',
+          retryWrites: true,  // 네트워크 이슈 시 자동 재시도
+          w: 'majority',      // 쓰기 응답을 majority 노드로부터 기다림
+          readConcern: { level: 'majority' }, // 읽기 일관성 확보
+          writeConcern: { w: 'majority', wtimeout: 5000 },
         };
       },
       inject: [ConfigService],
