@@ -1,6 +1,6 @@
 import { Controller, Get, Post, Body, Query, UseGuards, Param } from '@nestjs/common';
 import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
-import { ApiResult, make_api_result } from '../common/api_result';
+import { ApiResult, make_api_result, ApiError } from '../common/api_result';
 import { EventService } from './event.service';
 import { Roles } from '../common/auth/roles.decorator';
 import { Role } from '../common/auth/auth.dto';
@@ -17,6 +17,9 @@ export class EventController {
       const result = await this.eventService.getEventList(query);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in getEventList:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
@@ -29,6 +32,9 @@ export class EventController {
       const result = await this.eventService.getEventDetail(eventId);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in getEventDetail:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
@@ -41,6 +47,9 @@ export class EventController {
       const result = await this.eventService.getHistoryList(query);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in getHistoryList:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
@@ -53,6 +62,9 @@ export class EventController {
       const result = await this.eventService.createRewardReceipt(data);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in createRewardReceipt:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }

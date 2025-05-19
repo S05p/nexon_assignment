@@ -1,9 +1,8 @@
 import { Controller, Post, Body, UseGuards, Req, Res } from '@nestjs/common';
-import { CustomJwtAuthGuard } from '../common/auth/jwt.strategy';
 import { ApiResult, make_api_result } from '../common/api_result';
 import { UserService } from './user.service';
 import { Response, Request } from 'express';
-
+import { ApiError } from '../common/api_result';
 @Controller('/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -14,6 +13,9 @@ export class UserController {
       const result = await this.userService.login(data, req, res);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in login:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
@@ -25,6 +27,9 @@ export class UserController {
       const result = await this.userService.signup(data, req, res);
       return make_api_result(ApiResult.IS_OK, result);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in signup:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
@@ -36,6 +41,9 @@ export class UserController {
       await this.userService.logout(req, res);
       return make_api_result(ApiResult.IS_OK);
     } catch (error) {
+      if (error instanceof ApiError) {
+        return make_api_result(error);
+      }
       console.error('Error in logout:', error);
       return make_api_result(ApiResult.UNKNOWN_ERROR);
     }
